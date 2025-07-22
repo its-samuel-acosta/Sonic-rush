@@ -10,7 +10,10 @@ public class Entities {
         new int[]{578, 425},
         new int[]{695, 425},
         new int[]{455, 606},
-        new int[]{487, 606}
+        new int[]{487, 606},
+        new int[]{3600, 450},
+        new int[]{3620, 450},
+        new int[]{3640, 450}
         // mas anillos 
     );
 
@@ -31,12 +34,12 @@ public class Entities {
     );
 
     static List<int[]> posicionesRobots = List.of(
-        new int[]{600 , 640},
+        new int[]{600 , 620},
         new int[]{1300, 500},
         new int[]{1400, 500},
-        new int[]{1500, 400},
         new int[]{2000, 450},
-        new int[]{2200, 500}
+        new int[]{2200, 500},
+        new int[]{3300, 430}
         // mas robots
     );
 
