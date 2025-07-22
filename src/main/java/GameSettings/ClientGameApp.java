@@ -324,15 +324,6 @@ public class ClientGameApp extends GameApplication {
                     break;
                 }
 
-                case "SpawnArbol": {
-                    double x = ((Number) bundle.get("x")).doubleValue();
-                    double y = ((Number) bundle.get("y")).doubleValue();
-
-                    spawn("arbol", x, y);
-                    System.out.println("¡Arbol spawnado por el servidor!");
-                    break;
-                }
-
                 case "Mover a la izquierda":
                 case "Mover a la derecha":
                 case "Saltar":
@@ -616,5 +607,8 @@ public class ClientGameApp extends GameApplication {
                 conexion.send(bundle);
             }
         }
+        if (player.getY() > 1000) { // Si el jugador baja más allá de Y=1000 (fuera de pantalla)
+                showGameOver();
+            }
     }
 }
