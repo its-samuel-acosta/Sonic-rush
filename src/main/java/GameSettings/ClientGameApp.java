@@ -10,6 +10,7 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.app.GameApplication;
 import static com.almasb.fxgl.dsl.FXGL.*;
 import java.util.ArrayList;
+import java.util.Collections; // Importar para Collections.sort
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import component.Personajes.SonicComponent;
 import component.Personajes.TailsComponent;
 import javafx.scene.text.Text;
 import javafx.scene.Scene;
+import javafx.util.Duration; // Importar Duration
 
 public class ClientGameApp extends GameApplication {
 
@@ -46,6 +48,9 @@ public class ClientGameApp extends GameApplication {
     private Entity stand_by;
     public GameLogic gameLogic;
 
+    // Lista para almacenar las puntuaciones altas
+    private List<ScoreEntry> highScores = new ArrayList<>();
+
     @Override
     protected void initSettings(GameSettings gameSettings) {
         gameSettings.setWidth(anchoPantalla);
@@ -57,21 +62,21 @@ public class ClientGameApp extends GameApplication {
     @Override
     protected void initGame() {
         getGameWorld().addEntityFactory(new GameFactory());
-        showMainMenu(); // Changed: Now the main menu is shown at startup
+        showMainMenu(); // Ahora se muestra el menú principal al inicio
         getGameScene().setBackgroundColor(Color.DARKBLUE);
         Music music = getAssetLoader().loadMusic("OST.mp3");
         //getAudioPlayer().loopMusic(music);
         gameLogic = new GameLogic();
         gameLogic.init();
 
-        // Spawn Eggman at visible coordinates (adjusted for demo)
-        // You can change these coordinates if your map is different
+        // Spawn de Eggman en coordenadas visibles (ajustadas para demostración)
+        // Puedes cambiar estas coordenadas si tu mapa es diferente
         spawn("eggman", 500, 420); 
-        System.out.println("Eggman ha spawneado en X=500, Y=420.");
+        System.out.println("Eggman ha sido spawnado en X=500, Y=420.");
     }
 
     /**
-     * Muestra el menú principal con las opciones Jugar, Ayuda y Acerca De.
+     * Muestra el menú principal del juego con opciones para Jugar, Ayuda, Acerca De y Puntuaciones.
      */
     private void showMainMenu() {
         getExecutor().startAsyncFX(() -> {
@@ -79,39 +84,46 @@ public class ClientGameApp extends GameApplication {
             VBox root = new VBox(15);
             root.setAlignment(Pos.CENTER);
             Text title = new Text("Menú Principal");
-            title.setStyle("-fx-font-size: 24px; -fx-fill: white;"); // EStilo para el titulo
+            title.setStyle("-fx-font-size: 24px; -fx-fill: white;"); // Estilo para el título
 
             Button btnPlay = new Button("Jugar");
             Button btnHelp = new Button("Ayuda");
             Button btnAbout = new Button("Acerca De");
+            Button btnScores = new Button("Puntuaciones"); // Nuevo botón de puntuaciones
 
-            // Styles for the buttons
+            // Estilos para los botones
             String baseButtonStyle = "-fx-font-size: 18px; -fx-padding: 10px 20px; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px;";
 
-            // Specific styles for each button
+            // Estilos específicos para cada botón
             String playButtonStyle = baseButtonStyle + "-fx-background-color: #0000FF;"; // Azul
-            String playButtonHoverStyle = "-fx-background-color: #0000CC;"; // Azul Oscuro
+            String playButtonHoverStyle = "-fx-background-color: #0000CC;"; // Azul más oscuro
 
             String helpButtonStyle = baseButtonStyle + "-fx-background-color: #FFFF00;"; // Amarillo
-            String helpButtonHoverStyle = "-fx-background-color: #CCCC00;"; // Amarillo Oscuro
-            btnHelp.setTextFill(Color.BLACK); // Hace el texto negro para poder leer sobre amarillo
+            String helpButtonHoverStyle = "-fx-background-color: #CCCC00;"; // Amarillo más oscuro
+            btnHelp.setTextFill(Color.BLACK); // Texto negro para legibilidad en amarillo
 
             String aboutButtonStyle = baseButtonStyle + "-fx-background-color: #FF0000;"; // Rojo
-            String aboutButtonHoverStyle = "-fx-background-color: #CC0000;"; // Rojo Oscuro
+            String aboutButtonHoverStyle = "-fx-background-color: #CC0000;"; // Rojo más oscuro
+
+            String scoresButtonStyle = baseButtonStyle + "-fx-background-color: #800080;"; // Púrpura (ejemplo)
+            String scoresButtonHoverStyle = "-fx-background-color: #6A0DAD;"; // Púrpura más oscuro
 
             btnPlay.setStyle(playButtonStyle);
             btnHelp.setStyle(helpButtonStyle);
             btnAbout.setStyle(aboutButtonStyle);
+            btnScores.setStyle(scoresButtonStyle); // Aplicar estilo al nuevo botón
 
             btnPlay.setOnMouseEntered(e -> btnPlay.setStyle(playButtonHoverStyle));
             btnPlay.setOnMouseExited(e -> btnPlay.setStyle(playButtonStyle));
 
             btnHelp.setOnMouseEntered(e -> btnHelp.setStyle(helpButtonHoverStyle));
             btnHelp.setOnMouseExited(e -> { btnHelp.setStyle(helpButtonStyle); btnHelp.setTextFill(Color.BLACK); });
-
-
+            
             btnAbout.setOnMouseEntered(e -> btnAbout.setStyle(aboutButtonHoverStyle));
             btnAbout.setOnMouseExited(e -> btnAbout.setStyle(aboutButtonStyle));
+
+            btnScores.setOnMouseEntered(e -> btnScores.setStyle(scoresButtonHoverStyle)); // Hover para puntuaciones
+            btnScores.setOnMouseExited(e -> btnScores.setStyle(scoresButtonStyle)); // Salir hover para puntuaciones
 
 
             btnPlay.setOnAction(e -> {
@@ -120,25 +132,28 @@ public class ClientGameApp extends GameApplication {
             });
 
             btnHelp.setOnAction(e -> {
-                showHelp(); // Muestra el dialogo de Ayuda (el menu principal permanece abierto)
+                showHelp(); // Muestra el diálogo de ayuda (el menú principal permanece abierto)
             });
 
             btnAbout.setOnAction(e -> {
-                showAbout(); // Muestra el dialogo de Acerca De (el menu principal permanece abierto)
+                showAbout(); // Muestra el diálogo "Acerca De" (el menú principal permanece abierto)
             });
 
-            root.getChildren().addAll(title, btnPlay, btnHelp, btnAbout);
-            root.setStyle("-fx-background-color: #333333;"); // Background oscuro para el VBox
-            // Set de la escena y el título de la ventana
-            Scene scene = new Scene(root, 350, 300); // Ajusta el tamaño de la ventana
+            btnScores.setOnAction(e -> {
+                showScores(); // Muestra el diálogo de puntuaciones
+            });
+
+            root.getChildren().addAll(title, btnPlay, btnHelp, btnAbout, btnScores); // Añadir el nuevo botón
+            root.setStyle("-fx-background-color: #333333;"); // Fondo oscuro para el VBox
+            Scene scene = new Scene(root, 350, 350); // Ajustar tamaño de la ventana del menú
             stage.setScene(scene);
-            stage.setTitle("Main Game Menu");
+            stage.setTitle("Menú Principal de Juego");
             stage.show();
         });
     }
 
     /**
-     * Muestra el menu de selección de personaje.
+     * Muestra el menú de selección de personaje.
      */
     private void showCharacterSelectionMenu() {
         getExecutor().startAsyncFX(() -> {
@@ -152,19 +167,19 @@ public class ClientGameApp extends GameApplication {
             Button btnTails = new Button("Tails");
             Button btnKnuckles = new Button("Knuckles");
 
-            // Estilos para los botones de personajes
+            // Estilos para los botones de personaje
             String baseCharButtonStyle = "-fx-font-size: 18px; -fx-padding: 10px 20px; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px;";
 
-            // Estilos especificos para cada botón
+            // Estilos específicos para cada botón de personaje
             String sonicButtonStyle = baseCharButtonStyle + "-fx-background-color: #0000FF;"; // Azul
-            String sonicButtonHoverStyle = "-fx-background-color: #0000CC;"; // Azul Oscuro
+            String sonicButtonHoverStyle = "-fx-background-color: #0000CC;"; // Azul más oscuro
 
             String tailsButtonStyle = baseCharButtonStyle + "-fx-background-color: #FFFF00;"; // Amarillo
-            String tailsButtonHoverStyle = "-fx-background-color: #CCCC00;"; // Amarillo Oscuro
-            btnTails.setTextFill(Color.BLACK); // Hace el texto oscuro para poder leer sobre amarillo
+            String tailsButtonHoverStyle = "-fx-background-color: #CCCC00;"; // Amarillo más oscuro
+            btnTails.setTextFill(Color.BLACK); // Texto negro para legibilidad en amarillo
 
             String knucklesButtonStyle = baseCharButtonStyle + "-fx-background-color: #FF0000;"; // Rojo
-            String knucklesButtonHoverStyle = "-fx-background-color: #CC0000;"; // Rojo Oscuro
+            String knucklesButtonHoverStyle = "-fx-background-color: #CC0000;"; // Rojo más oscuro
 
             btnSonic.setStyle(sonicButtonStyle);
             btnTails.setStyle(tailsButtonStyle);
@@ -197,7 +212,7 @@ public class ClientGameApp extends GameApplication {
 
             root.getChildren().addAll(title, btnSonic, btnTails, btnKnuckles);
             root.setStyle("-fx-background-color: #333333;");
-            Scene scene = new Scene(root, 350, 250); // Ajusta el tamaño de la ventana
+            Scene scene = new Scene(root, 350, 250); // Ajustar tamaño de la ventana
             stage.setScene(scene);
             stage.setTitle("Selecciona personaje");
             stage.show();
@@ -205,7 +220,7 @@ public class ClientGameApp extends GameApplication {
     }
 
     /**
-     * Muestra el dialogo de ayuda con instrucciones de juego y controles.
+     * Muestra un diálogo de ayuda con las instrucciones y reglas del juego.
      */
     private void showHelp() {
         String helpText = "¡Bienvenido a Sonic Adventure FXGL!\n\n" +
@@ -216,19 +231,23 @@ public class ClientGameApp extends GameApplication {
                           "- Recoge basura (papel, caucho, basura general) para limpiar el entorno.\n" +
                           "- Salta sobre los robots enemigos para eliminarlos.\n" +
                           "- Ten cuidado con Eggman, ¡es el jefe final!\n\n" +
+                          "Puntuaciones:\n" +
+                          "- Tu puntuación se calcula sumando la cantidad de basura recolectada (papel, caucho, basura) más los anillos que tengas al final de la partida.\n" +
+                          "- Si la partida termina en 'Game Over', tu puntuación registrada será 0.\n" +
+                          "- Puedes ver las puntuaciones más altas desde el menú principal.\n\n" +
                           "Reglas:\n" +
                           "- Pierdes anillos al ser golpeado por un enemigo. Si no tienes anillos, pierdes una vida.\n" +
                           "- Si pierdes todas tus vidas, es Game Over.\n" +
-                          "- Si caes del mapa, es Game Over.\n" + 
+                          "- Si caes por debajo de la altura Y=1000, es Game Over.\n" + 
                           "- Elimina a Eggman para ganar el juego.";
 
         getDialogService().showMessageBox(helpText, () -> {
-            // Hace callback cuando el dialogo se cierra. El menu principal permanece abierto.
+            // Callback cuando el diálogo se cierra. El menú principal permanece abierto.
         });
     }
 
     /**
-     * Muestra un dialogo de "Acerca de" con información del juego y los desarrolladores.
+     * Muestra un diálogo con información sobre el juego, desarrolladores y versión.
      */
     private void showAbout() {
         String aboutText = "Acerca de Sonic Adventure FXGL\n\n" +
@@ -237,11 +256,37 @@ public class ClientGameApp extends GameApplication {
                            "- FXGL (Framework de Juegos)\n" +
                            "- JavaFX (Para la interfaz de usuario)\n" +
                            "- Otras librerías internas de FXGL para audio, física, red, etc.\n\n" +
-                           "Desarrolladores: Millan, Villalba, Acosta, Rodriguez\n" +
-                           "Versión Actual: 1.0.0";
+                           "Desarrolladores:\n" +
+                           "- Millan\n" +
+                           "- Villalba\n" +
+                           "- Acosta\n" +
+                           "- Rodriguez\n\n" +
+                           "Versión Actual: 1.0.1"; // Versión actualizada
 
         getDialogService().showMessageBox(aboutText, () -> {
-            // Hace callback cuando el dialogo se cierra. El menu principal permanece abierto.
+            // Callback cuando el diálogo se cierra. El menú principal permanece abierto.
+        });
+    }
+
+    /**
+     * Muestra las puntuaciones más altas registradas.
+     */
+    private void showScores() {
+        // Ordenar las puntuaciones en orden descendente
+        Collections.sort(highScores, Collections.reverseOrder());
+
+        StringBuilder sb = new StringBuilder("--- Puntuaciones Altas ---\n\n");
+        if (highScores.isEmpty()) {
+            sb.append("Aún no hay puntuaciones registradas.");
+        } else {
+            // Mostrar solo las 10 mejores puntuaciones (o menos si hay menos de 10)
+            for (int i = 0; i < Math.min(highScores.size(), 10); i++) {
+                ScoreEntry entry = highScores.get(i);
+                sb.append(String.format("%d. %s: %d\n", i + 1, entry.getPlayerName(), entry.getScore()));
+            }
+        }
+        getDialogService().showMessageBox(sb.toString(), () -> {
+            // Callback cuando el diálogo se cierra. El menú principal permanece abierto.
         });
     }
 
@@ -267,11 +312,11 @@ public class ClientGameApp extends GameApplication {
                     Bundle solicitar = new Bundle("SolicitarCrearPersonaje");
                     solicitar.put("id", player.getId());
                     solicitar.put("tipo", personajePendiente);
-                    solicitar.put("x", 50); // Posicion inicial X
-                    solicitar.put("y", 150); // Posicion inicial Y
+                    solicitar.put("x", 50); // Initial X position
+                    solicitar.put("y", 150); // Initial Y position
                     conexion.send(solicitar);
 
-                    // Envia la posición inicial del jugador al servidor
+                    // Send initial position to synchronize server
                     Bundle sync = new Bundle("SyncPos");
                     sync.put("id", player.getId());
                     sync.put("x", 50);
@@ -288,7 +333,7 @@ public class ClientGameApp extends GameApplication {
                         .findFirst()
                         .ifPresent(Entity::removeFromWorld);
 
-                    // Contador de actualizacion si el anillo recogido es del jugador
+                    // Update counter if the player is oneself
                     String playerId = bundle.get("playerId");
                     if (playerId.equals(player.getId())) {
                         contadorAnillos++;
@@ -298,7 +343,6 @@ public class ClientGameApp extends GameApplication {
                 }
 
                 case "EggmanEliminado": {
-                    @SuppressWarnings("unused")
                     String eggmanId = bundle.get("eggmanId");
 
                     showGameWon();
@@ -354,7 +398,7 @@ public class ClientGameApp extends GameApplication {
                     double y = ((Number) bundle.get("y")).doubleValue();
                     String id = bundle.get("id");
                     Entity robot = spawn("robotEnemigo", x, y);
-                    robot.getProperties().setValue("id", id); // Guarda el id para identificarlo más tarde
+                    robot.getProperties().setValue("id", id); // Save id to identify it later
                     break;
                 }
 
@@ -363,7 +407,7 @@ public class ClientGameApp extends GameApplication {
                     double y = ((Number) bundle.get("y")).doubleValue();
                     String id = bundle.get("id");
                     Entity eggman = spawn("eggman", x, y);
-                    eggman.getProperties().setValue("id", id); // Guarda el id para identificarlo más tarde
+                    eggman.getProperties().setValue("id", id); // Save id to identify it later
 
                     break;
                 }
@@ -373,7 +417,7 @@ public class ClientGameApp extends GameApplication {
                     double y = ((Number) bundle.get("y")).doubleValue();
                     String id = bundle.get("id");
                     Entity ring = spawn("ring", x, y);
-                    ring.getProperties().setValue("id", id); // Guarda el id para identificarlo más tarde
+                    ring.getProperties().setValue("id", id); // Save id to identify it later
                     break;
                 }
 
@@ -402,8 +446,7 @@ public class ClientGameApp extends GameApplication {
                             Entity entidad = spawn(tipo, x, y);
                             player = (Player) entidad;
                             player.setConexion(conexion);
-                            // La mitad de la pantalla en X y un poco más arriba en Y
-                            // Enlaza la cámara al jugador
+                            // half of the screen in x, and a little further down in y
                             getGameScene().getViewport().bindToEntity(player, anchoPantalla/2.0, altoPantalla/1.5);
                             getGameScene().getViewport().setLazy(true);
                         } else {
@@ -427,7 +470,7 @@ public class ClientGameApp extends GameApplication {
                 case "SyncPos": {
                     String syncId = bundle.get("id");
                     if (syncId.equals(player.getId())) {
-                        return; // Se ignora el mensaje de sincronización del propio jugador
+                        return; // Ignore yourself
                     }
 
                     Player remotePlayer = personajeRemotos.get(syncId);
@@ -465,9 +508,8 @@ public class ClientGameApp extends GameApplication {
                     int total = bundle.get("total");
                     int restante = bundle.get("restante");
 
-                    GameLogic.agregarBarra((float) restante / total);
-                    GameLogic.filtroColor((float) restante / total); // Cambio de tono de color del filtro
-                    gameLogic.cambiarTextoBasuraGlobal("Basura global: " + restante + "/" + total);
+                    gameLogic.agregarBarra((float) restante / total);
+                    gameLogic.filtroColor((float) restante / total); // Change tone
                     gameLogic.cambiarTextoBasuraGlobal("Basura restante: " + restante + "/" + total);
                     break;
                 }
@@ -478,7 +520,7 @@ public class ClientGameApp extends GameApplication {
                 case "Detente": {
                     String moveId = bundle.get("id");
                     if (moveId.equals(player.getId())) {
-                        return; // Ignora el movimiento del propio jugador
+                        return; // Ignore your own messages
                     }
                     Player remotePlayer = personajeRemotos.get(moveId);
                     if (remotePlayer == null) {
@@ -581,16 +623,14 @@ public class ClientGameApp extends GameApplication {
             @Override
             protected void onActionBegin() {
                 if (player == null) return;
-                if (flag_Interactuar) { // Solo interactuar si se ha activado la bandera
-                    // Si el jugador es Knuckles y está cerca del caucho, interactúa
-                    // Manda mensaje al servidor para interactuar
+                if (flag_Interactuar) { // Only interact if the flag has been activated
+                    // Send message to server to interact with the environment
                     Bundle bundle = new Bundle("Interactuar");
                     bundle.put("id", player.getId());
                     bundle.put("tipo", player.getTipo());
                     conexion.send(bundle);
                     player.interactuar();
-                    recogerBasura(player, stand_by); // Llama el metodo recogerBasura
-                    stand_by.removeFromWorld(); // Elimina la entidad de caucho del mundo
+                    recogerBasura(player, stand_by); // Call the recogerBasura method with the stand_by entity
                     // }
                 }
             }
@@ -607,7 +647,7 @@ public class ClientGameApp extends GameApplication {
         getInput().addAction(new UserAction("Desactivar filtro") {
             @Override
             protected void onActionBegin() {
-                GameLogic.filtroColor(0);
+                gameLogic.filtroColor(0);
             }
         }, KeyCode.L);
     }
@@ -639,20 +679,13 @@ public class ClientGameApp extends GameApplication {
         onCollisionBegin(GameFactory.EntityType.KNUCKLES, GameFactory.EntityType.CAUCHO, (jugador, caucho) -> {
             if (player.hasComponent(KnucklesComponent.class)) {
                 flag_Interactuar = true;
-                stand_by = caucho; // Guarda la entidad de caucho para interactuar
-                // Manda mensaje al servidor para que el jugador pueda interactuar
+                stand_by = caucho; // Save the rubber entity to interact
             }
         });
 
         onCollisionEnd(GameFactory.EntityType.PLAYER, GameFactory.EntityType.CAUCHO, (jugador, caucho) -> {
             flag_Interactuar = false;
         });
-
-       onCollisionBegin(GameFactory.EntityType.PLAYER, GameFactory.EntityType.BASURA, (jugador, basura) -> {
-           if(jugador.hasComponent(SonicComponent.class) || jugador.hasComponent(TailsComponent.class) || jugador.hasComponent(KnucklesComponent.class)) {
-               recogerBasura((Player) jugador, basura);
-           }
-       });
 
        onCollisionBegin(GameFactory.EntityType.PLAYER, GameFactory.EntityType.ROBOT_ENEMIGO, (entidad, robot) -> {
            double alturaPlayer = entidad.getHeight();
@@ -720,7 +753,7 @@ public class ClientGameApp extends GameApplication {
         if (contadorAnillos > 0) {
             play("perder_anillos.wav");
             contadorAnillos = 0;
-            gameLogic.cambiarTextoAnillos("anillos: " + contadorAnillos);
+            gameLogic.cambiarTextoAnillos("Anillos: " + contadorAnillos);
             GameLogic.activarInvencibilidad(3000, player);
             return; 
         }
@@ -735,24 +768,90 @@ public class ClientGameApp extends GameApplication {
         }
     }
 
+    /**
+     * Muestra el mensaje de Game Over y solicita el nombre del jugador para la puntuación.
+     */
     private void showGameOver() {
-        getDialogService().showMessageBox("Game Over", () -> {
-            FXGL.getGameController().exit();
+        getDialogService().showMessageBox("¡Game Over!", () -> {
+            promptForNameAndSaveScore(0); // Puntuación es 0 en Game Over
         });
     }
 
+    /**
+     * Muestra el mensaje de Juego Ganado y solicita el nombre del jugador para la puntuación.
+     */
     private void showGameWon() {
         getDialogService().showMessageBox("¡Ganaste el Juego, Felicidades!", () -> {
-            FXGL.getGameController().exit();
+            int finalScore = contadorAnillos + contadorBasura + contadorPapel + contadorCaucho;
+            promptForNameAndSaveScore(finalScore);
         });
     }
+
+    /**
+     * Solicita al usuario un nombre y guarda la puntuación.
+     * Si el nombre es vacío o nulo, vuelve a solicitarlo.
+     * @param score La puntuación a guardar.
+     */
+    private void promptForNameAndSaveScore(int score) {
+        getDialogService().showInputBox("Ingresa tu nombre para el registro de puntuación:", name -> {
+            String playerName = name;
+            if (playerName == null || playerName.trim().isEmpty()) {
+                getDialogService().showMessageBox("El nombre no puede estar vacío. Por favor, intenta de nuevo.", () -> {
+                    promptForNameAndSaveScore(score); // Volver a solicitar el nombre
+                });
+                return; 
+            }
+            highScores.add(new ScoreEntry(playerName.trim(), score));
+            // Aquí podrías añadir lógica para guardar highScores a un archivo si fuera necesario
+            
+            // Reiniciar el juego y volver al menú principal
+            resetGameAndReturnToMenu();
+        });
+    }
+
+    /**
+     * Reinicia el estado del juego y vuelve al menú principal.
+     */
+    private void resetGameAndReturnToMenu() {
+        // Ejecutar la limpieza del mundo y el reinicio de forma asíncrona
+        // Esto evita ConcurrentModificationException al diferir la limpieza del mundo
+        // hasta que la iteración actual del bucle del juego haya terminado.
+        FXGL.runOnce(() -> {
+            // Limpiar todas las entidades del mundo del juego
+            getGameWorld().removeEntities(getGameWorld().getEntities());
+            System.out.println("DEBUG: Game world cleared.");
+
+            // Reiniciar contadores
+            contadorAnillos = 0;
+            contadorBasura = 0;
+            contadorPapel = 0;
+            contadorCaucho = 0;
+            flag_Interactuar = false;
+            stand_by = null;
+            System.out.println("DEBUG: Contadores y banderas reiniciados.");
+
+            // Reiniciar el objeto player a una nueva instancia
+            // Esto asegura que el jugador tenga vidas y estado iniciales
+            player = new Player(); // Asumiendo que el constructor de Player lo inicializa correctamente
+            System.out.println("DEBUG: Objeto Player reinicializado.");
+
+            // Reiniciar la lógica del juego (UI, etc.)
+            if (gameLogic != null) {
+                gameLogic.reset(); // Este método ya fue implementado en GameLogic.java
+                System.out.println("DEBUG: UI de GameLogic reiniciada.");
+            }
+
+            // Volver al menú principal
+            showMainMenu();
+            System.out.println("DEBUG: Regresando al menú principal.");
+
+        }, Duration.ZERO); // Ejecutar tan pronto como sea posible en el siguiente tick del juego
+    }
+
 
     @Override
     protected void onUpdate(double tpf) {
-        // Posicion existente del jugador
-        if (player == null) {
-            return; // Si el jugador no está inicializado, no hacemos nada
-        }
+        // Existing position synchronization logic
         if (conexion != null && player != null) {
             if (System.currentTimeMillis() % 100 < 16) {
                 Bundle bundle = new Bundle("SyncPos");
@@ -762,9 +861,8 @@ public class ClientGameApp extends GameApplication {
                 conexion.send(bundle);
             }
 
-            // Condicion para Game Over si el jugador cae por debajo de Y=1000
-            if (player.getY() > 1000) { // Si el jugador cae por debajo de Y=1000
-                play("muerte.wav");
+            // GAME OVER CONDITION BY HEIGHT
+            if (player.getY() > 1000) { // If the player falls below Y=1000 (off-screen)
                 showGameOver();
             }
         }
