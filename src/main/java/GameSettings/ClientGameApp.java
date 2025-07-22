@@ -600,7 +600,7 @@ public class ClientGameApp extends GameApplication {
     }
 
     private void showGameWon() {
-        getDialogService().showMessageBox("You Win!", () -> {
+        getDialogService().showMessageBox("¡Ganaste el Juego, Felicidades!", () -> {
             FXGL.getGameController().exit();
         });
     }
@@ -615,6 +615,11 @@ public class ClientGameApp extends GameApplication {
                 bundle.put("y", player.getY());
                 conexion.send(bundle);
             }
+        }
+        if (player.getY() > 1000) {
+            perderVidas();
+            player.setY(150); // Resetea la posición Y al caer
+            player.getComponent(PhysicsComponent.class).setVelocityY(0); // Detiene el movimiento vertical
         }
     }
 }

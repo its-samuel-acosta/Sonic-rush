@@ -15,19 +15,19 @@ public class Entities {
     );
 
     static List<int[]> posicionesBasura = List.of(
-            new int[]{600, 650},
-            new int[]{620, 650},
-            new int[]{640, 650},
-            new int[]{660, 650},
-            new int[]{1300, 320},
-            new int[]{1310, 320},
-            new int[]{1320, 320},
-            new int[]{1330, 320},
-            new int[]{1340, 320},
-            new int[]{1350, 320},
-            new int[]{1360, 320},
-            new int[]{1370, 320},
-            new int[]{1380, 320}
+             new int[]{600, 600},
+            new int[]{620, 600},
+            new int[]{640, 600},
+            new int[]{660, 600},
+            new int[]{1300, 450},
+            new int[]{1320, 450},
+            new int[]{1340, 450},
+            new int[]{1360, 450},
+            new int[]{1380, 450},
+            new int[]{1450, 500},
+            new int[]{1470, 500},
+            new int[]{1490, 500},
+            new int[]{1500, 500}
     );
 
     static List<int[]> posicionesRobots = List.of(
