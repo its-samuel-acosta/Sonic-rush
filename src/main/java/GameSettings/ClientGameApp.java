@@ -210,11 +210,7 @@ public class ClientGameApp extends GameApplication {
                            "- FXGL (Framework de Juegos)\n" +
                            "- JavaFX (Para la interfaz de usuario)\n" +
                            "- Otras librerías internas de FXGL para audio, física, red, etc.\n\n" +
-                           "Desarrolladores:\n" +
-                           "- Millan\n" +
-                           "- Villalba\n" +
-                           "- Acosta\n" +
-                           "- Rodriguez\n\n" +
+                           "Desarrolladores: Millan, Villalba, Acosta y Rodriguez\n" +
                            "Versión Actual: 1.0.0";
 
         getDialogService().showMessageBox(aboutText, () -> {
