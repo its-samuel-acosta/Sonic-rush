@@ -1,155 +1,71 @@
 package component;
 
-import com.almasb.fxgl.dsl.views.ScrollingBackgroundView;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.components.IrremovableComponent;
 import com.almasb.fxgl.entity.EntityFactory;
 import static com.almasb.fxgl.dsl.FXGL.*;
-
 import java.util.UUID;
-
 import com.almasb.fxgl.entity.SpawnData;
-
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import component.Personajes.KnucklesComponent;
+import component.Personajes.PlayerComponent;
 import component.Personajes.SonicComponent;
 import component.Personajes.TailsComponent;
-import component.Enemigos.EggmanComponent;
-import component.Items.TrashComponent;
-import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
-import javafx.scene.image.Image;
-
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.Spawns;
+import com.almasb.fxgl.entity.component.Component;
 import GameSettings.Player;
 
 public class GameFactory implements EntityFactory {
     
-
     public enum EntityType {
-        PLAYER, FONDO, TIERRA, ROBOT_ENEMIGO, RING, AGUA, BASURA, ARBOL, PAPEL, CAUCHO, EGGMAN, KNUCKLES, SONIC, TAILS
+        PLAYER, FONDO, TIERRA, ROBOT_ENEMIGO, RING, AGUA, BASURA, ARBOL, PAPEL, CAUCHO, EGGMAN
     }
 
-    @Spawns("fondo")
-    public Entity newBackground(SpawnData data) {
-        return entityBuilder()
-                .view(new ScrollingBackgroundView(texture("background/background2.png").getImage(), getAppWidth(), getAppHeight(), Orientation.HORIZONTAL, 0.2))
-                .zIndex(-1)
-                .with(new IrremovableComponent())
-                .at(0, 0)
-                .build();
-    }
-/*
-    @Spawns("player")
-    public Entity newPlayer(SpawnData data) {
+    /**
+     * Método base privado para crear cualquier tipo de jugador.
+     * Centraliza la configuración de física y componentes comunes.
+     */
+    private Player createPlayerBase(SpawnData data, PlayerComponent playerComponent) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.DYNAMIC);
         physics.addGroundSensor(new HitBox("GROUND_SENSOR", new Point2D(16, 38), BoundingShape.box(6, 8)));
+        physics.setFixtureDef(new FixtureDef().friction(1.0f).restitution(0.0f));
 
-        // this avoids player sticking to walls
-        physics.setFixtureDef(new FixtureDef().friction(0.0f));
+        Player player = new Player();
+        player.setType(EntityType.PLAYER);
+        player.getBoundingBoxComponent().addHitBox(new HitBox(new Point2D(5, 5), BoundingShape.circle(12)));
+        player.getBoundingBoxComponent().addHitBox(new HitBox(new Point2D(10, 25), BoundingShape.box(10, 17)));
+        
+        player.addComponent(physics);
+        player.addComponent(new CollidableComponent(true));
+        player.addComponent(new IrremovableComponent());
+        player.addComponent(playerComponent); // Añade el componente específico del personaje
 
-        return entityBuilder(data)
-                .type(EntityType.PLAYER)
-                .bbox(new HitBox(new Point2D(5,5), BoundingShape.circle(12)))
-                .bbox(new HitBox(new Point2D(10,25), BoundingShape.box(10, 17)))
-                .with(physics)
-                .with(new CollidableComponent(true))
-                .with(new IrremovableComponent())
-                .with(new PlayerComponent())
-                .build();
-    } */
+        player.setPosition(data.getX(), data.getY());
+        player.getProperties().setValue("altura", 32.0);
+
+        return player;
+    }
 
     @Spawns("sonic")
     public Player sonic(SpawnData data) {
-            PhysicsComponent physics = new PhysicsComponent();
-            physics.setBodyType(BodyType.DYNAMIC);
-            physics.addGroundSensor(new HitBox("GROUND_SENSOR", new Point2D(16, 38), BoundingShape.box(6, 8)));
-
-            FixtureDef fixtureDef = new FixtureDef();
-            fixtureDef.setFriction(1.0f);  // Esto es lo mejor que encontre para reducir al minimo los empujes, pero no lo soluciona
-            fixtureDef.setRestitution(0.0f);
-            physics.setFixtureDef(fixtureDef);
-
-            Player player = new Player();
-
-            player.setType(EntityType.PLAYER);
-            player.setTipo("sonic");
-            player.getBoundingBoxComponent().addHitBox(new HitBox(new Point2D(5,5), BoundingShape.circle(12)));
-            player.getBoundingBoxComponent().addHitBox(new HitBox(new Point2D(10,25), BoundingShape.box(10, 17)));
-
-            player.addComponent(physics);
-            player.addComponent(new CollidableComponent(true));
-            player.addComponent(new IrremovableComponent());
-            player.addComponent(new SonicComponent());
-
-            player.setPosition(data.getX(), data.getY());
-            player.getProperties().setValue("altura", 32.0);
-
-        return player;
+        return createPlayerBase(data, new SonicComponent());
     }
 
     @Spawns("tails")
     public Player tails(SpawnData data) {
-        PhysicsComponent physics = new PhysicsComponent();
-        physics.setBodyType(BodyType.DYNAMIC);
-        physics.addGroundSensor(new HitBox("GROUND_SENSOR", new Point2D(16, 38), BoundingShape.box(6, 8)));
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.setFriction(1.0f);
-        fixtureDef.setRestitution(0.0f);
-        physics.setFixtureDef(fixtureDef);
-
-        Player player = new Player();
-
-        player.setType(EntityType.PLAYER);
-        player.setTipo("tails");
-        player.getBoundingBoxComponent().addHitBox(new HitBox(new Point2D(5,5), BoundingShape.circle(12)));
-        player.getBoundingBoxComponent().addHitBox(new HitBox(new Point2D(10,25), BoundingShape.box(10, 17)));
-
-        player.addComponent(physics);
-        player.addComponent(new CollidableComponent(true));
-        player.addComponent(new IrremovableComponent());
-        player.addComponent(new TailsComponent());
-
-        player.setPosition(data.getX(), data.getY());
-        player.getProperties().setValue("altura", 32.0);
-
-        return player;
+        return createPlayerBase(data, new TailsComponent());
     }
 
     @Spawns("knuckles")
     public Player knuckles(SpawnData data) {
-        PhysicsComponent physics = new PhysicsComponent();
-        physics.setBodyType(BodyType.DYNAMIC);
-        physics.addGroundSensor(new HitBox("GROUND_SENSOR", new Point2D(16, 38), BoundingShape.box(6, 8)));
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.setFriction(1.0f);
-        fixtureDef.setRestitution(0.0f);
-        physics.setFixtureDef(fixtureDef);
-
-        Player player = new Player();
-
-        player.setType(EntityType.PLAYER);
-        player.setTipo("knuckles");
-        player.getBoundingBoxComponent().addHitBox(new HitBox(new Point2D(5,5), BoundingShape.circle(12)));
-        player.getBoundingBoxComponent().addHitBox(new HitBox(new Point2D(10,24), BoundingShape.box(10, 17)));
-
-        player.addComponent(physics);
-        player.addComponent(new CollidableComponent(true));
-        player.addComponent(new IrremovableComponent());
-        player.addComponent(new KnucklesComponent());
-
-        player.setPosition(data.getX(), data.getY());
-        player.getProperties().setValue("altura", 32.0);
-
-        return player;
+        return createPlayerBase(data, new KnucklesComponent());
     }
 
     @Spawns("plataforma")
@@ -176,30 +92,28 @@ public class GameFactory implements EntityFactory {
                 .build();
     }
 
-    @Spawns("ring")
-    public Entity ring(SpawnData data) {
-        Entity ring = entityBuilder(data)
-                .type(EntityType.RING)
-                .bbox(new HitBox(new Point2D(0, 0), BoundingShape.circle(12))) 
-                .with(new component.Items.RingComponent())
+     private Entity createItem(SpawnData data, EntityType type, Component itemComponent) {
+        Entity item = entityBuilder(data)
+                .type(type)
+                .bbox(new HitBox(new Point2D(0, 0), BoundingShape.circle(12)))
+                .with(itemComponent)
                 .with(new CollidableComponent(true))
-                .with("ringId", UUID.randomUUID().toString())
                 .build();
-        ring.getProperties().setValue("id", java.util.UUID.randomUUID().toString());
-        return ring;
+        // Manera unificada y recomendada de asignar propiedades
+        item.getProperties().setValue("id", UUID.randomUUID().toString());
+        return item;
     }
 
-    @Spawns("basura")
+     @Spawns("ring")
+    public Entity ring(SpawnData data) {
+        return createItem(data, EntityType.RING, new component.Items.RingComponent());
+    }
+
+@Spawns("basura")
     public Entity basura(SpawnData data) {
-        Entity basura = entityBuilder(data)
-                .type(EntityType.BASURA)
-                .bbox(new HitBox(new Point2D(0, 0), BoundingShape.circle(12)))
-                .with(new component.Items.TrashComponent())
-                .with(new CollidableComponent(true))
-                .with("trashId", UUID.randomUUID().toString())
-                .build();
-        basura.getProperties().setValue("id", java.util.UUID.randomUUID().toString());
-        return basura;
+        Entity trash = createItem(data, EntityType.BASURA, new component.Items.TrashComponent());
+        trash.getProperties().setValue("tipo", "basura");
+        return trash;
     }
 
     @Spawns("papel")

@@ -5,18 +5,15 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
 import javafx.geometry.Point2D;
-import javafx.scene.image.Image;
-import javafx.util.Duration;
-import static com.almasb.fxgl.dsl.FXGL.image;
-import static com.almasb.fxgl.dsl.FXGL.play;
 
 public abstract class PlayerComponent extends Component {
 
     protected PhysicsComponent physics;
     protected AnimatedTexture texture;
     protected AnimationChannel parado, caminando, saltando;
+    
     protected int saltosPermitidos = 2;
-    protected int velocidad_lateral_base; // Default horizontal speed
+    protected int velocidad_lateral_base;
     protected int velocidad_vertical_base;
     static int MAX_SALTOS = 2;
 
@@ -26,7 +23,6 @@ public abstract class PlayerComponent extends Component {
     public void onAdded() {
         entity.getTransformComponent().setScaleOrigin(new Point2D(16, 21));
         entity.getViewComponent().addChild(texture);
-
         physics.onGroundProperty().addListener((obs, old, tocandoPiso) -> {
             if (tocandoPiso) {
                 saltosPermitidos = MAX_SALTOS;
@@ -66,11 +62,12 @@ public abstract class PlayerComponent extends Component {
     }
 
     public void saltar() {
-        if (saltosPermitidos == 0)
-            return;
-
-        physics.setVelocityY(-velocidad_vertical_base); // negativo para ir hacia arriba
-
-        saltosPermitidos--;
+        if (saltosPermitidos > 0) {
+            physics.setVelocityY(-velocidad_vertical_base);
+            saltosPermitidos--;
+        }
     }
+    
+    // La interacción por defecto no hace nada, se sobreescribe en Knuckles
+    public void interactuar() {}
 }

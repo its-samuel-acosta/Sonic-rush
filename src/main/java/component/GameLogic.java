@@ -21,13 +21,14 @@ public class GameLogic extends Component implements Serializable {
 
     private Text textoCaucho;
     private Text textoAnillos;
-    private Text textoBasuraGlobal; // Ahora es una variable de instancia
+    private Text textoBasuraGlobal; 
     private Text textoVidas;
     private Text textoBasura;
     private Text textoPapel;
+    private Text textoTiempo; // Nuevo: Texto para el temporizador
 
-    private ProgressBar currentProgressBar; // Para gestionar la barra de progreso
-    private ColorAdjust currentColorAdjust; // Para gestionar el efecto de ajuste de color
+    private ProgressBar currentProgressBar; 
+    private ColorAdjust currentColorAdjust; 
 
     public GameLogic() {
         // Inicialización de todos los objetos Text
@@ -56,10 +57,16 @@ public class GameLogic extends Component implements Serializable {
         textoPapel.setFont(Font.font("Impact", 24));
         addUINode(textoPapel, 20, 80);
 
-        textoBasuraGlobal = new Text("Basura restante: 0"); // Inicializar aquí
+        textoBasuraGlobal = new Text("Basura restante: 0"); 
         textoBasuraGlobal.setStyle("-fx-font-size: 24px; -fx-fill: white;");
         textoBasuraGlobal.setFont(Font.font("Impact", 24));
-        addUINode(textoBasuraGlobal, 700, 20); // Añadirlo al UI
+        addUINode(textoBasuraGlobal, 700, 20); 
+
+        // Nuevo: Inicialización del texto del temporizador
+        textoTiempo = new Text("Tiempo: 180");
+        textoTiempo.setStyle("-fx-font-size: 24px; -fx-fill: orange;");
+        textoTiempo.setFont(Font.font("Impact", 24));
+        addUINode(textoTiempo, 700, 80); // Posición para el temporizador
 
         // Inicializar referencias a null para la barra de progreso y el filtro de color
         this.currentProgressBar = null;
@@ -138,9 +145,7 @@ public class GameLogic extends Component implements Serializable {
     // Si se usaba externamente para crear otros textos globales, su lógica debería ser revisada.
     @SuppressWarnings("unused")
     private static Text crearTextoGlobal() {
-        // Este método ya no es necesario ya que textoBasuraGlobal se inicializa en el constructor.
-        // Se mantiene como un placeholder si la lógica original lo requería para algo más.
-        return new Text(""); // Retorna un texto vacío o null si no es usado.
+        return new Text(""); 
     }
 
     public void cambiarTextoBasuraGlobal(String mensaje) {
@@ -168,11 +173,19 @@ public class GameLogic extends Component implements Serializable {
     }
 
     /**
+     * Nuevo: Cambia el texto que muestra el tiempo restante.
+     * @param mensaje El nuevo mensaje para el tiempo.
+     */
+    public void cambiarTextoTiempo(String mensaje) {
+        textoTiempo.setText(mensaje);
+    }
+
+    /**
      * Inicializa la lógica del juego, restableciendo los textos de UI.
      * Se llama al inicio del juego.
      */
     public void init() {
-        reset(); // Llama a reset para asegurar que todos los elementos de UI estén en su estado inicial
+        reset(); 
     }
 
     /**
@@ -186,6 +199,7 @@ public class GameLogic extends Component implements Serializable {
         textoBasura.setText("Basura: 0");
         textoPapel.setText("Papel: 0");
         textoBasuraGlobal.setText("Basura restante: 0");
+        textoTiempo.setText("Tiempo: 180"); // Reiniciar el texto del temporizador
 
         // Eliminar y restablecer la barra de progreso
         if (currentProgressBar != null) {
@@ -195,7 +209,7 @@ public class GameLogic extends Component implements Serializable {
 
         // Restablecer el filtro de color
         if (currentColorAdjust != null) {
-            getGameScene().getRoot().setEffect(null); // Eliminar el efecto del nodo raíz
+            getGameScene().getRoot().setEffect(null); 
             currentColorAdjust = null;
         }
     }
