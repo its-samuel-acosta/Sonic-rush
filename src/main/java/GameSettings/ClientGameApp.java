@@ -591,7 +591,7 @@ public class ClientGameApp extends GameApplication {
     }
 
     private void showGameWon() {
-        getDialogService().showMessageBox("You Win!", () -> {
+        getDialogService().showMessageBox("¡Ganaste el Juego, Felicidades!", () -> {
             FXGL.getGameController().exit();
         });
     }
@@ -610,5 +610,5 @@ public class ClientGameApp extends GameApplication {
         if (player.getY() > 1000) { // Si el jugador baja más allá de Y=1000 (fuera de pantalla)
                 showGameOver();
             }
-    }
+        }
 }
