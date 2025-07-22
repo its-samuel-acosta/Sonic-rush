@@ -3,7 +3,6 @@ package GameSettings;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.serialization.Bundle;
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.multiplayer.MultiplayerService;
 import com.almasb.fxgl.net.Connection;
@@ -30,7 +29,6 @@ public class ServerGameApp extends GameApplication implements Serializable {
     private final Set<Integer> eventosDisparados = new HashSet<>();
 
     private com.almasb.fxgl.net.Server<Bundle> server;
-    private int totalBasura = 0;
 
     @Override
     protected void initSettings(GameSettings gameSettings) {
@@ -85,7 +83,7 @@ public class ServerGameApp extends GameApplication implements Serializable {
             basuraEntidad.getProperties().setValue("tipo", tipo);
             basuras.put(id, basuraEntidad);
         }
-        totalBasura = basuras.size(); 
+        basuras.size(); 
     }
 
     /**
@@ -295,11 +293,15 @@ public class ServerGameApp extends GameApplication implements Serializable {
         }
     }
 
-    @Override
+       @Override
     protected void onUpdate(double tpf) {
+        int updateCount = 0;
+        // Incrementa el contador de actualizaciones en cada frame
+        updateCount++;
+
         // Sincroniza la posición de las entidades no controladas por jugadores a un ritmo fijo.
-        // Se usa getTick() directamente, que está disponible en GameApplication.
-        if (getGameTimer().getTick() % 6 == 0) { // 10 actualizaciones por segundo
+        // Ahora se usa el contador de actualizaciones en lugar de getTick().
+        if (updateCount % 6 == 0) { // 10 actualizaciones por segundo (60 FPS / 6 = 10)
             // Sincroniza robots
             for (Map.Entry<String, Entity> entry : robots.entrySet()) {
                 Bundle pos = new Bundle("SyncRobotPos");

@@ -20,6 +20,7 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.component.Component;
 import GameSettings.Player;
+import com.almasb.fxgl.texture.Texture; // Importar Texture
 
 public class GameFactory implements EntityFactory {
     
@@ -68,6 +69,18 @@ public class GameFactory implements EntityFactory {
         return createPlayerBase(data, new KnucklesComponent());
     }
 
+    // Nuevo método para la entidad "fondo"
+    @Spawns("fondo")
+    public Entity newBackground(SpawnData data) {
+        // Carga la textura del fondo. Asegúrate de que "fondo.png" esté en assets/textures/
+        Texture backgroundTexture = getAssetLoader().loadTexture("fondo.png"); 
+        
+        return entityBuilder(data)
+                .view(backgroundTexture)
+                .zIndex(-100) // Asegura que el fondo esté detrás de todo lo demás
+                .build();
+    }
+
     @Spawns("plataforma")
     public Entity newPlatform(SpawnData data) {
         PhysicsComponent physics = new PhysicsComponent();
@@ -109,7 +122,7 @@ public class GameFactory implements EntityFactory {
         return createItem(data, EntityType.RING, new component.Items.RingComponent());
     }
 
-@Spawns("basura")
+    @Spawns("basura")
     public Entity basura(SpawnData data) {
         Entity trash = createItem(data, EntityType.BASURA, new component.Items.TrashComponent());
         trash.getProperties().setValue("tipo", "basura");
