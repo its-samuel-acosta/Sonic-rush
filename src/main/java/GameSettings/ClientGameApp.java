@@ -57,48 +57,168 @@ public class ClientGameApp extends GameApplication {
     @Override
     protected void initGame() {
         getGameWorld().addEntityFactory(new GameFactory());
-        showCharacterSelectionMenu();
+        showMainMenu(); // Cambiado: Ahora se muestra el menú principal al inicio
         getGameScene().setBackgroundColor(Color.DARKBLUE);
         Music music = getAssetLoader().loadMusic("OST.mp3");
         //getAudioPlayer().loopMusic(music);
         gameLogic = new GameLogic();
         gameLogic.init();
+
+        // Spawn de Eggman en coordenadas visibles (ajustadas para demostración)
+        // Puedes cambiar estas coordenadas si tu mapa es diferente
+        spawn("eggman", 500, 420); 
+        System.out.println("Eggman ha sido spawnado en X=500, Y=420.");
     }
 
+    /**
+     * Muestra el menú principal del juego con opciones para Jugar, Ayuda y Acerca De.
+     */
+    private void showMainMenu() {
+        getExecutor().startAsyncFX(() -> {
+            Stage stage = new Stage();
+            VBox root = new VBox(15);
+            root.setAlignment(Pos.CENTER);
+            Text title = new Text("Menú Principal");
+            title.setStyle("-fx-font-size: 24px; -fx-fill: white;"); // Estilo para el título
+
+            Button btnPlay = new Button("Jugar");
+            Button btnHelp = new Button("Ayuda");
+            Button btnAbout = new Button("Acerca De");
+
+            // Estilos para los botones
+            String buttonStyle = "-fx-font-size: 18px; -fx-padding: 10px 20px; -fx-background-color: #4CAF50; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px;";
+            String buttonHoverStyle = "-fx-background-color: #45a049;";
+
+            btnPlay.setStyle(buttonStyle);
+            btnHelp.setStyle(buttonStyle);
+            btnAbout.setStyle(buttonStyle);
+
+            btnPlay.setOnMouseEntered(e -> btnPlay.setStyle(buttonHoverStyle));
+            btnPlay.setOnMouseExited(e -> btnPlay.setStyle(buttonStyle));
+            btnHelp.setOnMouseEntered(e -> btnHelp.setStyle(buttonHoverStyle));
+            btnHelp.setOnMouseExited(e -> btnHelp.setStyle(buttonStyle));
+            btnAbout.setOnMouseEntered(e -> btnAbout.setStyle(buttonHoverStyle));
+            btnAbout.setOnMouseExited(e -> btnAbout.setStyle(buttonStyle));
+
+
+            btnPlay.setOnAction(e -> {
+                stage.close(); // Cierra el menú principal
+                showCharacterSelectionMenu(); // Abre la selección de personaje
+            });
+
+            btnHelp.setOnAction(e -> {
+                showHelp(); // Muestra el diálogo de ayuda (el menú principal permanece abierto)
+            });
+
+            btnAbout.setOnAction(e -> {
+                showAbout(); // Muestra el diálogo "Acerca De" (el menú principal permanece abierto)
+            });
+
+            root.getChildren().addAll(title, btnPlay, btnHelp, btnAbout);
+            root.setStyle("-fx-background-color: #333333;"); // Fondo oscuro para el VBox
+            Scene scene = new Scene(root, 350, 300); // Ajustar tamaño de la ventana del menú
+            stage.setScene(scene);
+            stage.setTitle("Menú Principal de Juego");
+            stage.show();
+        });
+    }
+
+    /**
+     * Muestra el menú de selección de personaje.
+     */
     private void showCharacterSelectionMenu() {
         getExecutor().startAsyncFX(() -> {
             Stage stage = new Stage();
             VBox root = new VBox(15);
             root.setAlignment(Pos.CENTER);
             Text title = new Text("Selecciona tu personaje");
+            title.setStyle("-fx-font-size: 24px; -fx-fill: white;");
+
             Button btnSonic = new Button("Sonic");
             Button btnTails = new Button("Tails");
             Button btnKnuckles = new Button("Knuckles");
 
+            String buttonStyle = "-fx-font-size: 18px; -fx-padding: 10px 20px; -fx-background-color: #4CAF50; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px;";
+            String buttonHoverStyle = "-fx-background-color: #45a049;";
+
+            btnSonic.setStyle(buttonStyle);
+            btnTails.setStyle(buttonStyle);
+            btnKnuckles.setStyle(buttonStyle);
+
+            btnSonic.setOnMouseEntered(e -> btnSonic.setStyle(buttonHoverStyle));
+            btnSonic.setOnMouseExited(e -> btnSonic.setStyle(buttonStyle));
+            btnTails.setOnMouseEntered(e -> btnTails.setStyle(buttonHoverStyle));
+            btnTails.setOnMouseExited(e -> btnTails.setStyle(buttonStyle));
+            btnKnuckles.setOnMouseEntered(e -> btnKnuckles.setStyle(buttonHoverStyle));
+            btnKnuckles.setOnMouseExited(e -> btnKnuckles.setStyle(buttonStyle));
+
             btnSonic.setOnAction(e -> {
                 personajePendiente = "sonic";
-                
-                stage.close();
+                stage.close(); // Cierra la selección de personaje
                 startNetworkAndGame();
             });
             btnTails.setOnAction(e -> {
                 personajePendiente = "tails";
-                
-                stage.close();
+                stage.close(); // Cierra la selección de personaje
                 startNetworkAndGame();
             });
             btnKnuckles.setOnAction(e -> {
                 personajePendiente = "knuckles";
-                
-                stage.close();
+                stage.close(); // Cierra la selección de personaje
                 startNetworkAndGame();
             });
 
             root.getChildren().addAll(title, btnSonic, btnTails, btnKnuckles);
-            Scene scene = new Scene(root, 300, 200);
+            root.setStyle("-fx-background-color: #333333;");
+            Scene scene = new Scene(root, 350, 250); // Ajustar tamaño de la ventana
             stage.setScene(scene);
             stage.setTitle("Selecciona personaje");
             stage.show();
+        });
+    }
+
+    /**
+     * Muestra un diálogo de ayuda con las instrucciones y reglas del juego.
+     */
+    private void showHelp() {
+        String helpText = "¡Bienvenido a Sonic Adventure FXGL!\n\n" +
+                          "Cómo jugar:\n" +
+                          "- Usa las teclas A y D para mover a tu personaje a la izquierda y derecha.\n" +
+                          "- Usa la tecla W para saltar.\n" +
+                          "- Recoge anillos para aumentar tu puntuación y protegerte de los enemigos.\n" +
+                          "- Recoge basura (papel, caucho, basura general) para limpiar el entorno.\n" +
+                          "- Salta sobre los robots enemigos para eliminarlos.\n" +
+                          "- Ten cuidado con Eggman, ¡es el jefe final!\n\n" +
+                          "Reglas:\n" +
+                          "- Pierdes anillos al ser golpeado por un enemigo. Si no tienes anillos, pierdes una vida.\n" +
+                          "- Si pierdes todas tus vidas, es Game Over.\n" +
+                          "- Si caes del mapa, es Game Over.\n" + 
+                          "- Elimina a Eggman para ganar el juego.";
+
+        getDialogService().showMessageBox(helpText, () -> {
+            // Callback cuando el diálogo se cierra. El menú principal permanece abierto.
+        });
+    }
+
+    /**
+     * Muestra un diálogo con información sobre el juego, desarrolladores y versión.
+     */
+    private void showAbout() {
+        String aboutText = "Acerca de Sonic Adventure FXGL\n\n" +
+                           "Lenguaje de Programación: JAVA\n" +
+                           "Librerías Externas Utilizadas:\n" +
+                           "- FXGL (Framework de Juegos)\n" +
+                           "- JavaFX (Para la interfaz de usuario)\n" +
+                           "- Otras librerías internas de FXGL para audio, física, red, etc.\n\n" +
+                           "Desarrolladores:\n" +
+                           "- Millan\n" +
+                           "- Villalba\n" +
+                           "- Acosta\n" +
+                           "- Rodriguez\n\n" +
+                           "Versión Actual: 1.0.0";
+
+        getDialogService().showMessageBox(aboutText, () -> {
+            // Callback cuando el diálogo se cierra. El menú principal permanece abierto.
         });
     }
 
@@ -124,6 +244,8 @@ public class ClientGameApp extends GameApplication {
                     Bundle solicitar = new Bundle("SolicitarCrearPersonaje");
                     solicitar.put("id", player.getId());
                     solicitar.put("tipo", personajePendiente);
+                    solicitar.put("x", 50); // Posición inicial X
+                    solicitar.put("y", 150); // Posición inicial Y
                     conexion.send(solicitar);
 
                     // Envia posicion inicial para sincronizar servidor
@@ -498,7 +620,7 @@ public class ClientGameApp extends GameApplication {
         });
 
        onCollisionBegin(GameFactory.EntityType.PLAYER, GameFactory.EntityType.BASURA, (jugador, basura) -> {
-           if (jugador.hasComponent(SonicComponent.class) || jugador.hasComponent(TailsComponent.class) || jugador.hasComponent(KnucklesComponent.class)) {
+           if(jugador.hasComponent(SonicComponent.class) || jugador.hasComponent(TailsComponent.class) || jugador.hasComponent(KnucklesComponent.class)) {
                recogerBasura((Player) jugador, basura);
            }
        });
@@ -598,6 +720,7 @@ public class ClientGameApp extends GameApplication {
 
     @Override
     protected void onUpdate(double tpf) {
+        // Lógica de sincronización de posición existente
         if (conexion != null && player != null) {
             if (System.currentTimeMillis() % 100 < 16) {
                 Bundle bundle = new Bundle("SyncPos");
@@ -606,9 +729,11 @@ public class ClientGameApp extends GameApplication {
                 bundle.put("y", player.getY());
                 conexion.send(bundle);
             }
-        }
-        if (player.getY() > 1000) { // Si el jugador baja más allá de Y=1000 (fuera de pantalla)
+
+            // CONDICIÓN DE GAME OVER POR ALTURA
+            if (player.getY() > 1000) { // Si el jugador baja más allá de Y=1000 (fuera de pantalla)
                 showGameOver();
             }
         }
+    }
 }
