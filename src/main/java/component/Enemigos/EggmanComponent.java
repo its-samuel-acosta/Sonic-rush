@@ -21,7 +21,7 @@ public class EggmanComponent extends EnemyComponent {
     @Override
     public void onAdded() {
         super.onAdded(); // Llama a la lógica base de EnemyComponent
-        Image image = image("Enemigos/eggman.png");
+        Image image = image("Enemigos/eggman2.png");
         ImageView view = new ImageView(image);
         view.setFitWidth(100);
         view.setFitHeight(100);
