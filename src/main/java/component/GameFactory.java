@@ -63,16 +63,19 @@ public class GameFactory implements EntityFactory {
 
     @Spawns("sonic")
     public Player sonic(SpawnData data) {
+        System.out.println("GameFactory: Creando entidad SONIC");
         return createPlayerBase(data, new SonicComponent());
     }
 
     @Spawns("tails")
     public Player tails(SpawnData data) {
+        System.out.println("GameFactory: Creando entidad TAILS");
         return createPlayerBase(data, new TailsComponent());
     }
 
     @Spawns("knuckles")
     public Player knuckles(SpawnData data) {
+        System.out.println("GameFactory: Creando entidad KNUCKLES");
         return createPlayerBase(data, new KnucklesComponent());
     }
 

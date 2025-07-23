@@ -42,7 +42,8 @@ public class ClientGameApp extends GameApplication {
     private final int altoPantalla = 600;
     private Connection<Bundle> conexion;
     private Map<String, Player> personajeRemotos = new HashMap<>();
-    private Player player = new Player(); // Inicializado, pero no parte del mundo aún
+    private Player player = null; // Inicializado como null, solo se asigna tras el spawn
+    private String idPendiente = null; // Variable temporal para el ID del jugador
     private String personajePendiente = null;
     private int contadorAnillos = 0;
     private int contadorBasura = 0;
@@ -299,14 +300,12 @@ public class ClientGameApp extends GameApplication {
         for (Entity entity : allEntities) {
             entity.removeFromWorld();
         }
-        System.out.println("DEBUG: Game world cleared using alternative method.");
 
         spawn("fondo");
         setLevelFromMap("mapazo.tmx");
         
         // Spawn de Eggman al inicio de cada partida
         spawn("eggman", 500, 420); 
-        System.out.println("Eggman ha sido spawnado en X=500, Y=420.");
 
         var client = getNetService().newTCPClient("localhost", 55555);
         client.setOnConnected(conn -> {
@@ -314,7 +313,6 @@ public class ClientGameApp extends GameApplication {
             Bundle hola = new Bundle("Hola");
             conn.send(hola);
             Platform.runLater(() -> onClient()); // Asegura que se ejecuta en el hilo FX
-            System.out.println("Cliente conectado");
         });
         client.connectAsync();
 
@@ -342,9 +340,9 @@ public class ClientGameApp extends GameApplication {
         conexion.addMessageHandlerFX((conexion, bundle) -> {
             switch (bundle.getName()) {
                 case "TuID": {
-                    player.setId(bundle.get("id"));
+                    idPendiente = bundle.get("id");
                     Bundle solicitar = new Bundle("SolicitarCrearPersonaje");
-                    solicitar.put("id", player.getId());
+                    solicitar.put("id", idPendiente);
                     solicitar.put("tipo", personajePendiente);
                     solicitar.put("x", 50); // Initial X position
                     solicitar.put("y", 150); // Initial Y position
@@ -352,7 +350,7 @@ public class ClientGameApp extends GameApplication {
 
                     // Send initial position to synchronize server
                     Bundle sync = new Bundle("SyncPos");
-                    sync.put("id", player.getId());
+                    sync.put("id", idPendiente);
                     sync.put("x", 50);
                     sync.put("y", 150);
                     conexion.send(sync);
@@ -469,35 +467,38 @@ public class ClientGameApp extends GameApplication {
                 }
 
                 case "Crear Personaje": {
-                    System.out.println("DEBUG: Recibido 'Crear Personaje' para ID: " + bundle.get("id") + ", Tipo: " + bundle.get("tipo"));
                     String id = bundle.get("id");
                     String tipo = bundle.get("tipo");
                     double x = ((Number)bundle.get("x")).doubleValue();
                     double y = ((Number)bundle.get("y")).doubleValue();
 
-                    if (id.equals(player.getId())) {
+                    if (id.equals(idPendiente)) {
                         if (!isPlayerReady) { // Solo si el jugador local no ha sido configurado
                             Entity entidad = spawn(tipo, x, y); // La entidad se crea y sus componentes se añaden
                             player = (Player) entidad;
-                            player.setConexion(conexion);
-                            
-                            // Obtener el PlayerComponent DESPUÉS de que la entidad ha sido spawnada
-                            // Esto asegura que el onAdded() del PlayerComponent ya se ha ejecutado
-                            PlayerComponent pComp = player.getComponentOptional(PlayerComponent.class).orElse(null);
+                            if (idPendiente != null) {
+                                player.setId(idPendiente);
+                            }
+                            // Eliminar los System.out.print y System.out.println relacionados con logs de componentes y PlayerComponent tras el spawn del jugador.
+                            // Buscar PlayerComponent por instanceof
+                            PlayerComponent pComp = null;
+                            for (var comp : player.getComponents()) {
+                                if (comp instanceof PlayerComponent) {
+                                    pComp = (PlayerComponent) comp;
+                                    break;
+                                }
+                            }
                             if (pComp != null) {
-                                player.setPlayerComponent(pComp); // Ahora se setea correctamente
+                                player.setPlayerComponent(pComp);
                             } else {
                                 System.err.println("ERROR: PlayerComponent no encontrado después de spawnear la entidad para el jugador local. Esto es crítico.");
                             }
-
                             getGameScene().getViewport().bindToEntity(player, anchoPantalla/2.0, altoPantalla/1.5);
                             getGameScene().getViewport().setLazy(true);
                             isPlayerReady = true; // El jugador local está listo
-                            System.out.println("DEBUG: Jugador local (" + player.getTipo() + ") inicializado y listo para el movimiento.");
                         } else {
                             player.setX(x);
                             player.setY(y);
-                            System.out.println("DEBUG: Actualizando posición del jugador local a X:" + x + ", Y:" + y);
                         }
                     } else {
                         Player remotePlayer = personajeRemotos.get(id);
@@ -505,7 +506,6 @@ public class ClientGameApp extends GameApplication {
                             Entity entidad = spawn(tipo, x, y);
                             remotePlayer = (Player) entidad;;
                             personajeRemotos.put(id, remotePlayer);
-                            
                             // Lo mismo para jugadores remotos
                             PlayerComponent pComp = remotePlayer.getComponentOptional(PlayerComponent.class).orElse(null);
                             if (pComp != null) {
@@ -513,11 +513,9 @@ public class ClientGameApp extends GameApplication {
                             } else {
                                 System.err.println("ERROR: PlayerComponent no encontrado después de spawnear la entidad para el jugador remoto. Esto es crítico.");
                             }
-                            System.out.println("DEBUG: Jugador remoto (" + tipo + ") con ID " + id + " creado.");
                         } else {
                             remotePlayer.setX(x);
                             remotePlayer.setY(y);
-                            System.out.println("DEBUG: Actualizando posición de jugador remoto ID " + id + " a X:" + x + ", Y:" + y);
                         }
                     }
                     break;
@@ -608,9 +606,7 @@ public class ClientGameApp extends GameApplication {
         getInput().addAction(new UserAction("Mover a la izquierda") {
             @Override
             protected void onAction() {
-                System.out.println("DEBUG: Tecla A presionada (Mover a la izquierda action)");
-                if (!isPlayerReady || player == null) { // Verificar si el jugador está listo
-                    System.err.println("ERROR: Jugador no está listo o es nulo al presionar A. isPlayerReady: " + isPlayerReady + ", player: " + (player != null));
+                if (!isPlayerReady || player == null) {
                     return;
                 }
                 Bundle bundle = new Bundle("Mover a la izquierda");
@@ -620,9 +616,7 @@ public class ClientGameApp extends GameApplication {
             }
             @Override
             protected void onActionEnd() {
-                System.out.println("DEBUG: Tecla A liberada (Detener action)");
-                if (!isPlayerReady || player == null) { // Verificar si el jugador está listo
-                    System.err.println("ERROR: Jugador no está listo o es nulo al liberar A. isPlayerReady: " + isPlayerReady + ", player: " + (player != null));
+                if (!isPlayerReady || player == null) {
                     return;
                 }
                 Bundle bundle = new Bundle("Detente");
@@ -635,9 +629,7 @@ public class ClientGameApp extends GameApplication {
         getInput().addAction(new UserAction("Mover a la derecha") {
             @Override
             protected void onAction() {
-                System.out.println("DEBUG: Tecla D presionada (Mover a la derecha action)");
-                if (!isPlayerReady || player == null) { // Verificar si el jugador está listo
-                    System.err.println("ERROR: Jugador no está listo o es nulo al presionar D. isPlayerReady: " + isPlayerReady + ", player: " + (player != null));
+                if (!isPlayerReady || player == null) {
                     return;
                 }
                 Bundle bundle = new Bundle("Mover a la derecha");
@@ -647,9 +639,7 @@ public class ClientGameApp extends GameApplication {
             }
             @Override
             protected void onActionEnd() {
-                System.out.println("DEBUG: Tecla D liberada (Detener action)");
-                if (!isPlayerReady || player == null) { // Verificar si el jugador está listo
-                    System.err.println("ERROR: Jugador no está listo o es nulo al liberar D. isPlayerReady: " + isPlayerReady + ", player: " + (player != null));
+                if (!isPlayerReady || player == null) {
                     return;
                 }
                 Bundle bundle = new Bundle("Detente");
@@ -662,9 +652,7 @@ public class ClientGameApp extends GameApplication {
         getInput().addAction(new UserAction("Saltar") {
             @Override
             protected void onActionBegin() {
-                System.out.println("DEBUG: Tecla W presionada (Saltar action)");
-                if (!isPlayerReady || player == null) { // Verificar si el jugador está listo
-                    System.err.println("ERROR: Jugador no está listo o es nulo al presionar W. isPlayerReady: " + isPlayerReady + ", player: " + (player != null));
+                if (!isPlayerReady || player == null) {
                     return;
                 }
                 Bundle bundle = new Bundle("Saltar");
@@ -677,9 +665,7 @@ public class ClientGameApp extends GameApplication {
         getInput().addAction(new UserAction("Interactuar") {
             @Override
             protected void onActionBegin() {
-                System.out.println("DEBUG: Tecla E presionada (Interactuar action)");
-                if (!isPlayerReady || player == null) { // Verificar si el jugador está listo
-                    System.err.println("ERROR: Jugador no está listo o es nulo al presionar E. isPlayerReady: " + isPlayerReady + ", player: " + (player != null));
+                if (!isPlayerReady || player == null) {
                     return;
                 }
                 if (flag_Interactuar) {
@@ -695,9 +681,7 @@ public class ClientGameApp extends GameApplication {
         getInput().addAction(new UserAction("Transformar") {
             @Override
             protected void onActionBegin() {
-                System.out.println("DEBUG: Tecla P presionada (Transformar action)");
-                if (!isPlayerReady || player == null) { // Verificar si el jugador está listo
-                    System.err.println("ERROR: Jugador no está listo o es nulo al presionar P. isPlayerReady: " + isPlayerReady + ", player: " + (player != null));
+                if (!isPlayerReady || player == null) {
                     return;
                 }
                 player.transformarSuperSonic();
@@ -707,7 +691,6 @@ public class ClientGameApp extends GameApplication {
         getInput().addAction(new UserAction("Desactivar filtro") {
             @Override
             protected void onActionBegin() {
-                System.out.println("DEBUG: Tecla L presionada (Desactivar filtro action)");
                 if (gameLogic != null) {
                     gameLogic.filtroColor(0);
                 }
@@ -890,7 +873,6 @@ public class ClientGameApp extends GameApplication {
         for (Entity entity : allEntities) {
             entity.removeFromWorld();
         }
-        System.out.println("DEBUG: Game world cleared using alternative method.");
 
         // Reiniciar contadores
         contadorAnillos = 0;
@@ -899,30 +881,25 @@ public class ClientGameApp extends GameApplication {
         contadorCaucho = 0;
         flag_Interactuar = false;
         stand_by = null;
-        System.out.println("DEBUG: Contadores y banderas reiniciados.");
 
         // Reiniciar el objeto player a una nueva instancia
-        player = new Player();
+        player = null;
         isPlayerReady = false; // El jugador ya no está listo hasta que se vuelva a crear
-        System.out.println("DEBUG: Objeto Player reinicializado. isPlayerReady = false.");
 
         // Detener el temporizador del juego si está activo
         if (gameTimerAction != null) {
             gameTimerAction.expire();
             gameTimerAction = null;
-            System.out.println("DEBUG: Temporizador del juego detenido.");
         }
         timeLeft = 180.0; // Reiniciar el tiempo para la próxima partida
 
         // Reiniciar la lógica del juego (UI, etc.)
         if (gameLogic != null) {
             gameLogic.reset();
-            System.out.println("DEBUG: UI de GameLogic reiniciada.");
         }
 
         // Volver al menú principal
         showMainMenu();
-        System.out.println("DEBUG: Regresando al menú principal.");
 
         // Resetear la bandera
         pendingReset = false;
