@@ -179,11 +179,11 @@ public class GameFactory implements EntityFactory {
 
         Entity robot = entityBuilder(data)
                 .type(EntityType.ROBOT_ENEMIGO)
-                .bbox(new HitBox(new Point2D(10, 10), BoundingShape.circle(40))) // radio 32 centrada
+                .bbox(new HitBox(new Point2D(0, 0), BoundingShape.box(48, 48))) // hitbox cuadrado alineado con el sprite
                 .with(physics)
                 .with(new CollidableComponent(true))
                 .with(new RobotComponent())
-                .with("altura", 100.0)
+                .with("altura", 48.0)
                 .build(); 
 
         robot.getProperties().setValue("id", java.util.UUID.randomUUID().toString()); 
