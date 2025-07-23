@@ -16,8 +16,10 @@ public class SonicComponent extends PlayerComponent {
     public static final AnimationChannel SUPER_VUELO = new AnimationChannel(image("Personajes/super_sonic.png"), 8, 44, 60, Duration.seconds(0.66), 7, 7); 
 
     public SonicComponent() {
-        velocidad_lateral_base = 400; 
-        velocidad_vertical_base = 240; 
+
+        MAX_SALTOS = 2; // Sonic puede saltar 2 veces
+        velocidad_lateral_base = 475; 
+        velocidad_vertical_base = 390; 
         
         parado = NORMAL_IDLE; 
         caminando = NORMAL_CAMINA; 

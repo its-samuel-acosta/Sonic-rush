@@ -14,8 +14,9 @@ public class KnucklesComponent extends PlayerComponent {
         Image idle = image("Personajes/knuckles.png"); 
         Image golpe = image("Personajes/knuckles_golpe.png"); 
         
-        velocidad_lateral_base = 300; 
-        velocidad_vertical_base = 200; 
+        MAX_SALTOS = 2; // Knuckles solo puede saltar una vez
+        velocidad_lateral_base = 425; 
+        velocidad_vertical_base = 365; 
         
         parado = new AnimationChannel(idle, 11, 34, 44, Duration.seconds(1), 0, 0); 
         caminando = new AnimationChannel(idle, 11, 36, 44, Duration.seconds(0.8), 1, 5); 

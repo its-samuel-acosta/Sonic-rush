@@ -46,7 +46,7 @@ public class ScoreEntry implements Comparable<ScoreEntry> {
         // Ordenar por puntuación de forma descendente
         int scoreComparison = Integer.compare(this.score, other.score);
         if (scoreComparison != 0) {
-            return -scoreComparison; // Invertir para orden descendente
+            return scoreComparison; // Invertir para orden descendente
         }
         // Si las puntuaciones son iguales, ordenar por nombre alfabéticamente
         return this.playerName.compareToIgnoreCase(other.playerName);
