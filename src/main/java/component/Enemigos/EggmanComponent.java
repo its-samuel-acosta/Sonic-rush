@@ -11,7 +11,7 @@ public class EggmanComponent extends EnemyComponent {
 
     // Define las características específicas de Eggman
     private static final double VELOCIDAD = 75;
-    private static final double DISTANCIA_PATRULLAJE = 300;
+    private static final double DISTANCIA_PATRULLAJE = 1000;
     private static final int VIDAS = 10;
 
     public EggmanComponent() {
