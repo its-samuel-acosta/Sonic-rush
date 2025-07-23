@@ -105,9 +105,10 @@ public class ClientGameApp extends GameApplication {
 
         String playButtonStyle = baseButtonStyle + "-fx-background-color: #0000FF;"; // Azul
         String playButtonHoverStyle = "-fx-background-color: #0000CC;";
+        btnPlay.setTextFill(Color.WHITE);
 
-        String helpButtonStyle = baseButtonStyle + "-fx-background-color: #FFFF00;"; // Amarillo
-        String helpButtonHoverStyle = "-fx-background-color: #CCCC00;";
+        String helpButtonStyle = baseButtonStyle + "-fx-background-color: #f75f07ff;"; // Amarillo
+        String helpButtonHoverStyle = "-fx-background-color: #f75f07ff;";
         btnHelp.setTextFill(Color.BLACK);
 
         String aboutButtonStyle = baseButtonStyle + "-fx-background-color: #FF0000;"; // Rojo
@@ -115,6 +116,7 @@ public class ClientGameApp extends GameApplication {
 
         String scoresButtonStyle = baseButtonStyle + "-fx-background-color: #800080;"; // Púrpura
         String scoresButtonHoverStyle = "-fx-background-color: #6A0DAD;";
+        btnScores.setTextFill(Color.WHITE);
 
         btnPlay.setStyle(playButtonStyle);
         btnHelp.setStyle(helpButtonStyle);
@@ -151,7 +153,7 @@ public class ClientGameApp extends GameApplication {
         });
 
         root.getChildren().addAll(title, btnPlay, btnHelp, btnAbout, btnScores);
-        root.setStyle("-fx-background-color: #333333;");
+        root.setStyle("-fx-background-color: #0c0c0cff;");
         Scene scene = new Scene(root, 350, 350);
         stage.setScene(scene);
         stage.setTitle("Menú Principal de Juego");
@@ -177,9 +179,10 @@ public class ClientGameApp extends GameApplication {
 
             String sonicButtonStyle = baseCharButtonStyle + "-fx-background-color: #0000FF;";
             String sonicButtonHoverStyle = "-fx-background-color: #0000CC;";
+            btnSonic.setTextFill(Color.WHITE);
 
-            String tailsButtonStyle = baseCharButtonStyle + "-fx-background-color: #FFFF00;";
-            String tailsButtonHoverStyle = "-fx-background-color: #CCCC00;";
+            String tailsButtonStyle = baseCharButtonStyle + "-fx-background-color: #f75f07ff;";
+            String tailsButtonHoverStyle = "-fx-background-color: #f75f07ff;";
             btnTails.setTextFill(Color.BLACK);
 
             String knucklesButtonStyle = baseCharButtonStyle + "-fx-background-color: #FF0000;";
@@ -215,7 +218,7 @@ public class ClientGameApp extends GameApplication {
             });
 
             root.getChildren().addAll(title, btnSonic, btnTails, btnKnuckles);
-            root.setStyle("-fx-background-color: #333333;");
+            root.setStyle("-fx-background-color: #080808ff;");
             Scene scene = new Scene(root, 350, 250);
             stage.setScene(scene);
             stage.setTitle("Selecciona personaje");
@@ -228,22 +231,23 @@ public class ClientGameApp extends GameApplication {
      */
     private void showHelp() {
         String helpText = "¡Bienvenido a Sonic Adventure FXGL!\n\n" +
-                          "Cómo jugar:\n" +
-                          "- Usa las teclas A y D para mover a tu personaje a la izquierda y derecha.\n" +
-                          "- Usa la tecla W para saltar.\n" +
-                          "- Recoge anillos para aumentar tu puntuación y protegerte de los enemigos.\n" +
-                          "- Recoge basura (papel, caucho, basura general) para limpiar el entorno.\n" +
-                          "- Salta sobre los robots enemigos para eliminarlos.\n" +
-                          "- Ten cuidado con Eggman, ¡es el jefe final!\n\n" +
-                          "Puntuaciones:\n" +
-                          "- Tu puntuación se calcula sumando la cantidad de basura recolectada (papel, caucho, basura) más los anillos que tengas al final de la partida.\n" +
-                          "- Si la partida termina en 'Game Over', tu puntuación registrada será 0.\n" +
-                          "- Puedes ver las puntuaciones más altas desde el menú principal.\n\n" +
-                          "Reglas:\n" +
-                          "- Pierdes anillos al ser golpeado por un enemigo. Si no tienes anillos, pierdes una vida.\n" +
-                          "- Si pierdes todas tus vidas, es Game Over.\n" +
-                          "- Si caes por debajo de la altura Y=1000, es Game Over.\n" + 
-                          "- Elimina a Eggman para ganar el juego.";
+                          "   Cómo jugar:\n" +
+                          " - Usa las teclas A y D para mover a tu personaje a la izquierda y derecha.\n" +
+                          " - Usa la tecla W para saltar.\n" +
+                          " - Recoge anillos para aumentar tu puntuación y protegerte de los enemigos.\n" +
+                          " - Recoge basura (papel, caucho, basura general) para limpiar el entorno.\n" +
+                          " - Salta sobre los robots enemigos para eliminarlos.\n" +
+                          " - Ten cuidado con Eggman, ¡es el jefe final!\n\n" +
+                          "   Puntuaciones:\n" +
+                          " - Tu puntuación se calcula sumando la cantidad de basura recolectada (papel, caucho, basura) \n" +
+                          "   más los anillos que tengas al final de la partida.\n" +
+                          " - Si la partida termina en 'Game Over', tu puntuación registrada será 0.\n" +
+                          " - Puedes ver las puntuaciones más altas desde el menú principal.\n\n" +
+                          "   Reglas:\n" +
+                          " - Pierdes anillos al ser golpeado por un enemigo. Si no tienes anillos, pierdes una vida.\n" +
+                          " - Si pierdes todas tus vidas, es Game Over.\n" +
+                          " - Si caes del mapa, es Game Over.\n" + 
+                          " - Elimina a Eggman para ganar el juego.";
 
         getDialogService().showMessageBox(helpText, () -> {
             // Callback cuando el diálogo se cierra. El menú principal permanece abierto.
@@ -261,10 +265,7 @@ public class ClientGameApp extends GameApplication {
                            "- JavaFX (Para la interfaz de usuario)\n" +
                            "- Otras librerías internas de FXGL para audio, física, red, etc.\n\n" +
                            "Desarrolladores:\n" +
-                           "- Millan\n" +
-                           "- Villalba\n" +
-                           "- Acosta\n" +
-                           "- Rodriguez\n\n" +
+                           "- Millan, Villalba, Acosta, Rodriguez \n" +
                            "Versión Actual: 1.0.1";
 
         getDialogService().showMessageBox(aboutText, () -> {

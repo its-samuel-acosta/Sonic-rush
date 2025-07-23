@@ -14,8 +14,8 @@ public class TailsComponent extends PlayerComponent {
         Image camina_anim = image("Personajes/tails_caminando.png");
         
         MAX_SALTOS = 3; // Tails puede saltar más veces
-        velocidad_lateral_base = 300; 
-        velocidad_vertical_base = 200; 
+        velocidad_lateral_base = 450; 
+        velocidad_vertical_base = 425; 
         
         parado = new AnimationChannel(idle, 22, 41, 42, Duration.seconds(4), 0, 21); 
         caminando = new AnimationChannel(camina_anim, 8, 49, 44, Duration.seconds(0.8), 0, 7); 
