@@ -21,10 +21,10 @@ public class RobotComponent extends EnemyComponent {
     @Override
     public void onAdded() {
         super.onAdded(); // Llama a la lógica base de EnemyComponent
-        Image image = image("Enemigos/enemigo.png");
+        Image image = image("Enemigos/enemigo2.png");
         ImageView view = new ImageView(image);
-        view.setFitWidth(100);
-        view.setFitHeight(100);
+        view.setFitWidth(48);
+        view.setFitHeight(48);
         entity.getViewComponent().addChild(view);
     }
 }
