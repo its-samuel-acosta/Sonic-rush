@@ -45,11 +45,6 @@ public abstract class PlayerComponent extends Component {
         });
     }
     
-    private PhysicsComponent getPhysics() {
-        return entity.getComponent(PhysicsComponent.class);
-    }
-
-
     @Override
     public void onUpdate(double tpf) {
         if (physics == null) {

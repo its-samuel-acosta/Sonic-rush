@@ -4,24 +4,18 @@ import GameSettings.Player;
 import com.almasb.fxgl.core.serialization.Bundle;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.net.Connection;
-import com.almasb.fxgl.time.TimerAction;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.util.Duration;
-import org.jetbrains.annotations.Nullable;
-
 import java.io.Serializable;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
-import static com.almasb.fxgl.dsl.FXGL.getGameTimer;
 
 public class GameLogic extends Component implements Serializable {
 
     private Text textoCaucho;
     private Text textoAnillos;
-    private Text textoBasuraGlobal; 
     private Text textoVidas;
     private Text textoBasura;
     private Text textoPapel;
@@ -60,11 +54,6 @@ public class GameLogic extends Component implements Serializable {
         textoPapel.setStyle("-fx-font-size: 24px; -fx-fill: white;");
         textoPapel.setFont(Font.font("Impact", 24));
         addUINode(textoPapel, 20, 80);
-
-        textoBasuraGlobal = new Text("Basura restante: 0"); 
-        textoBasuraGlobal.setStyle("-fx-font-size: 24px; -fx-fill: white;");
-        textoBasuraGlobal.setFont(Font.font("Impact", 24));
-        addUINode(textoBasuraGlobal, 700, 20); 
 
         textoTiempo = new Text("Tiempo: 180");
         textoTiempo.setStyle("-fx-font-size: 24px; -fx-fill: orange;");
@@ -158,10 +147,6 @@ public class GameLogic extends Component implements Serializable {
         addUINode(texto, x, y);
     }
 
-    public void cambiarTextoBasuraGlobal(String mensaje) {
-        textoBasuraGlobal.setText(mensaje);
-    }
-
     public void cambiarTextoAnillos(String mensaje) {
         textoAnillos.setText(mensaje);
     }
@@ -199,7 +184,6 @@ public class GameLogic extends Component implements Serializable {
         textoVidas.setText("Vidas: 3");
         textoBasura.setText("Basura: 0");
         textoPapel.setText("Papel: 0");
-        textoBasuraGlobal.setText("Basura restante: 0");
         textoTiempo.setText("Tiempo: 180");
 
         if (currentProgressBar != null) {

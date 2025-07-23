@@ -14,7 +14,7 @@ import com.almasb.fxgl.time.TimerAction;
 import component.GameFactory;
 import component.GameLogic;
 import component.Personajes.KnucklesComponent;
-import component.Personajes.PlayerComponent; // Import PlayerComponent
+import component.Personajes.PlayerComponent; 
 import component.Personajes.SonicComponent;
 import component.Personajes.TailsComponent;
 import javafx.application.Platform;
@@ -107,7 +107,7 @@ public class ClientGameApp extends GameApplication {
         String playButtonHoverStyle = "-fx-background-color: #0000CC;";
         btnPlay.setTextFill(Color.WHITE);
 
-        String helpButtonStyle = baseButtonStyle + "-fx-background-color: #f75f07ff;"; // Amarillo
+        String helpButtonStyle = baseButtonStyle + "-fx-background-color: #f75f07ff;"; // Naranja
         String helpButtonHoverStyle = "-fx-background-color: #f75f07ff;";
         btnHelp.setTextFill(Color.BLACK);
 
@@ -376,8 +376,6 @@ public class ClientGameApp extends GameApplication {
                 }
 
                 case "EggmanEliminado": {
-                    String eggmanId = bundle.get("eggmanId");
-
                     showGameWon();
                     break;
                 }
@@ -559,16 +557,6 @@ public class ClientGameApp extends GameApplication {
                     break;
                 }
 
-                case "EstadoBasuraGlobal": {
-                    int total = bundle.get("total");
-                    int restante = bundle.get("restante");
-
-                    gameLogic.agregarBarra((float) restante / total);
-                    gameLogic.filtroColor((float) restante / total); // Change tone
-                    gameLogic.cambiarTextoBasuraGlobal("Basura restante: " + restante + "/" + total);
-                    break;
-                }
-
                 case "Mover a la izquierda":
                 case "Mover a la derecha":
                 case "Saltar":
@@ -718,29 +706,19 @@ public class ClientGameApp extends GameApplication {
         });
 
         onCollisionBegin(GameFactory.EntityType.PLAYER, GameFactory.EntityType.PAPEL, (jugador, papel) -> {
-            if (player.hasComponent(TailsComponent.class)) {
+            if (player.hasComponent(TailsComponent.class)|| player.hasComponent(SonicComponent.class)) {
                 recogerBasura((Player)jugador, papel);
             }
         });
 
         onCollisionBegin(GameFactory.EntityType.PLAYER, GameFactory.EntityType.CAUCHO, (jugador, caucho) -> {
-            if (jugador.hasComponent(KnucklesComponent.class)) {
-                flag_Interactuar = true;
-                stand_by = caucho;
-            }
-        });
-
-        onCollisionEnd(GameFactory.EntityType.PLAYER, GameFactory.EntityType.CAUCHO, (jugador, caucho) -> {
-            if (jugador.hasComponent(KnucklesComponent.class)) {
-                flag_Interactuar = false;
-                stand_by = null;
+            if (jugador.hasComponent(KnucklesComponent.class)|| player.hasComponent(SonicComponent.class)) {
+               recogerBasura((Player)jugador, caucho);
             }
         });
 
        onCollisionBegin(GameFactory.EntityType.PLAYER, GameFactory.EntityType.ROBOT_ENEMIGO, (entidad, robot) -> {
            double alturaPlayer = entidad.getHeight();
-           double alturaRobot = robot.getHeight();
-
            double bottomPlayer = entidad.getY() + alturaPlayer;
            double topRobot = robot.getY();
 
@@ -760,8 +738,6 @@ public class ClientGameApp extends GameApplication {
 
         onCollisionBegin(GameFactory.EntityType.PLAYER, GameFactory.EntityType.EGGMAN, (entidad, eggman) -> {
             double alturaPlayer = entidad.getHeight();
-            double alturaEggman = eggman.getHeight();
-
             double bottomPlayer = entidad.getY() + alturaPlayer;
             double topEggman = eggman.getY();
 

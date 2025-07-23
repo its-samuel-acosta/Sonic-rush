@@ -18,8 +18,8 @@ public class SonicComponent extends PlayerComponent {
     public SonicComponent() {
 
         MAX_SALTOS = 2; // Sonic puede saltar 2 veces
-        velocidad_lateral_base = 475; 
-        velocidad_vertical_base = 390; 
+        velocidad_lateral_base = 450; 
+        velocidad_vertical_base = 375; 
         
         parado = NORMAL_IDLE; 
         caminando = NORMAL_CAMINA; 
