@@ -179,7 +179,7 @@ public class GameFactory implements EntityFactory {
 
         Entity robot = entityBuilder(data)
                 .type(EntityType.ROBOT_ENEMIGO)
-                .bbox(new HitBox(new Point2D(10, 10), BoundingShape.circle(35))) // radio 32 centrada
+                .bbox(new HitBox(new Point2D(10, 10), BoundingShape.circle(40))) // radio 32 centrada
                 .with(physics)
                 .with(new CollidableComponent(true))
                 .with(new RobotComponent())

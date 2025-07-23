@@ -18,6 +18,8 @@ public abstract class EnemyComponent extends Component {
 
     private double startX;
     private int direction = 1;
+    private int cooldownFrames = 0;
+    private static final int COOLDOWN_MAX = 15; // 15 frames de espera tras girar
 
     public EnemyComponent(double speed, double patrolDistance, int health) {
         this.speed = speed;
@@ -34,14 +36,29 @@ public abstract class EnemyComponent extends Component {
 
     @Override
     public void onUpdate(double tpf) {
+        if (cooldownFrames > 0) {
+            cooldownFrames--;
+        }
         // Patrullaje
         physics.setVelocityX(speed * direction);
 
         // Lógica de patrullaje mejorada para evitar el "drifting".
-        if (Math.abs(entity.getX() - startX) >= patrolDistance) {
+        if (Math.abs(entity.getX() - startX) >= patrolDistance && cooldownFrames == 0) {
             direction *= -1; // Invierte la dirección
-            // Se invierte la escala para que el sprite mire en la dirección correcta
             entity.setScaleX(entity.getScaleX() * -1);
+            cooldownFrames = COOLDOWN_MAX;
+        }
+
+        // Evitar que los enemigos se atraviesen entre sí (solo para robots)
+        if (entity.getType() == component.GameFactory.EntityType.ROBOT_ENEMIGO && cooldownFrames == 0) {
+            entity.getWorld().getEntitiesByType(component.GameFactory.EntityType.ROBOT_ENEMIGO).stream()
+                .filter(e -> e != entity && e.getBoundingBoxComponent().isCollidingWith(entity.getBoundingBoxComponent()))
+                .findAny()
+                .ifPresent(e -> {
+                    direction *= -1;
+                    entity.setScaleX(entity.getScaleX() * -1);
+                    cooldownFrames = COOLDOWN_MAX;
+                });
         }
     }
 
