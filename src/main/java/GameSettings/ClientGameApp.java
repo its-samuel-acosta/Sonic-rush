@@ -75,7 +75,7 @@ public class ClientGameApp extends GameApplication {
     protected void initGame() {
         getGameWorld().addEntityFactory(new GameFactory());
         getGameScene().setBackgroundColor(Color.DARKBLUE);
-        Music music = getAssetLoader().loadMusic("OST.mp3");
+        Music music = getAssetLoader().loadMusic("OST2.mp3");
         getAudioPlayer().loopMusic(music);
 
         Platform.runLater(() -> {
