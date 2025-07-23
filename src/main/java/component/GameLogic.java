@@ -25,13 +25,17 @@ public class GameLogic extends Component implements Serializable {
     private Text textoVidas;
     private Text textoBasura;
     private Text textoPapel;
-    private Text textoTiempo; // Nuevo: Texto para el temporizador
+    private Text textoTiempo;
 
     private ProgressBar currentProgressBar; 
     private ColorAdjust currentColorAdjust; 
 
+    // Variables para la invencibilidad manual
+    private double invincibilityRemainingTime = 0.0; // Tiempo restante de invencibilidad
+    private Player invinciblePlayer = null; // Referencia al jugador invencible
+    private double blinkTimerAccumulator = 0.0; // Acumulador para el parpadeo
+
     public GameLogic() {
-        // Inicialización de todos los objetos Text
         textoCaucho = new Text("Caucho: 0");
         textoCaucho.setStyle("-fx-font-size: 24px; -fx-fill: red;");
         textoCaucho.setFont(Font.font("Impact", 24));
@@ -62,28 +66,45 @@ public class GameLogic extends Component implements Serializable {
         textoBasuraGlobal.setFont(Font.font("Impact", 24));
         addUINode(textoBasuraGlobal, 700, 20); 
 
-        // Nuevo: Inicialización del texto del temporizador
         textoTiempo = new Text("Tiempo: 180");
         textoTiempo.setStyle("-fx-font-size: 24px; -fx-fill: orange;");
         textoTiempo.setFont(Font.font("Impact", 24));
-        addUINode(textoTiempo, 700, 80); // Posición para el temporizador
+        addUINode(textoTiempo, 700, 80);
 
-        // Inicializar referencias a null para la barra de progreso y el filtro de color
         this.currentProgressBar = null;
         this.currentColorAdjust = null;
+    }
+
+    @Override
+    public void onUpdate(double tpf) {
+        // Lógica de invencibilidad manual
+        if (invincibilityRemainingTime > 0) {
+            invincibilityRemainingTime -= tpf * 1000; // Restar milisegundos
+
+            // Lógica de parpadeo manual
+            blinkTimerAccumulator += tpf * 1000;
+            if (blinkTimerAccumulator >= 200) { // Cada 200 ms
+                if (invinciblePlayer != null) {
+                    invinciblePlayer.getViewComponent().setVisible(!invinciblePlayer.getViewComponent().isVisible());
+                }
+                blinkTimerAccumulator = 0;
+            }
+
+            if (invincibilityRemainingTime <= 0) {
+                if (invinciblePlayer != null) {
+                    invinciblePlayer.setInvencibilidad(false);
+                    invinciblePlayer.getViewComponent().setVisible(true); // Asegurarse de que sea visible al final
+                }
+                invinciblePlayer = null; // Limpiar la referencia
+                invincibilityRemainingTime = 0;
+                blinkTimerAccumulator = 0; // Resetear el acumulador de parpadeo
+            }
+        }
     }
 
     public static void enviarMensaje(String titulo, Connection<Bundle> conexion) {
         Bundle bundle = new Bundle(titulo);
         conexion.send(bundle);
-    }
-
-    public static void SyncPos(@Nullable Player player) {
-        Bundle bundle = new Bundle("syncPos");
-        bundle.put("x", player.getPosition().getX());
-        bundle.put("y", player.getPosition().getY());
-        bundle.put("tipo", player.getTipo());
-        player.getConexion().send(bundle);
     }
 
     public static void imprimir(String titulo) {
@@ -96,7 +117,6 @@ public class GameLogic extends Component implements Serializable {
      * @param num El valor de progreso (entre 0.0 y 1.0).
      */
     public void agregarBarra(float num) {
-        // Eliminar la barra de progreso existente si la hay
         if (currentProgressBar != null) {
             getGameScene().getRoot().getChildren().remove(currentProgressBar);
         }
@@ -115,7 +135,7 @@ public class GameLogic extends Component implements Serializable {
         progressBar.setLayoutX(20);
         progressBar.setLayoutY(30);
         getGameScene().getRoot().getChildren().add(progressBar);
-        this.currentProgressBar = progressBar; // Almacenar la referencia
+        this.currentProgressBar = progressBar;
     }
 
     /**
@@ -126,26 +146,16 @@ public class GameLogic extends Component implements Serializable {
     public void filtroColor(float num) {
         if (currentColorAdjust == null) {
             currentColorAdjust = new ColorAdjust();
-            getGameScene().getRoot().setEffect(currentColorAdjust); // Aplicar solo una vez
+            getGameScene().getRoot().setEffect(currentColorAdjust);
         }
-        currentColorAdjust.setHue(num * 0.15); // Cambia el tono
+        currentColorAdjust.setHue(num * 0.15);
     }
 
-    // Este método ya no es estático y no debería ser llamado directamente para agregar textos que se gestionan como instancias.
-    // Se mantiene para compatibilidad si hay otros usos, pero se recomienda usar las variables de instancia de Text.
     public static void agregarTexto(String mensaje, String color, int size, int x, int y) {
         Text texto = new Text(mensaje);
         texto.setStyle("-fx-font-size: " + size + "px; -fx-fill: " + color + ";");
         texto.setFont(Font.font("Impact", size));
         addUINode(texto, x, y);
-    }
-
-    // El método crearTextoGlobal() ya no es necesario como método estático que añade al UI,
-    // ya que textoBasuraGlobal se inicializa en el constructor.
-    // Si se usaba externamente para crear otros textos globales, su lógica debería ser revisada.
-    @SuppressWarnings("unused")
-    private static Text crearTextoGlobal() {
-        return new Text(""); 
     }
 
     public void cambiarTextoBasuraGlobal(String mensaje) {
@@ -172,25 +182,16 @@ public class GameLogic extends Component implements Serializable {
         textoPapel.setText(mensaje);
     }
 
-    /**
-     * Nuevo: Cambia el texto que muestra el tiempo restante.
-     * @param mensaje El nuevo mensaje para el tiempo.
-     */
     public void cambiarTextoTiempo(String mensaje) {
         textoTiempo.setText(mensaje);
     }
 
-    /**
-     * Inicializa la lógica del juego, restableciendo los textos de UI.
-     * Se llama al inicio del juego.
-     */
     public void init() {
         reset(); 
     }
 
     /**
      * Restablece todos los elementos de UI gestionados por GameLogic a su estado inicial.
-     * Este método se llama cuando el juego regresa al menú principal.
      */
     public void reset() {
         textoCaucho.setText("Caucho: 0");
@@ -199,32 +200,34 @@ public class GameLogic extends Component implements Serializable {
         textoBasura.setText("Basura: 0");
         textoPapel.setText("Papel: 0");
         textoBasuraGlobal.setText("Basura restante: 0");
-        textoTiempo.setText("Tiempo: 180"); // Reiniciar el texto del temporizador
+        textoTiempo.setText("Tiempo: 180");
 
-        // Eliminar y restablecer la barra de progreso
         if (currentProgressBar != null) {
             getGameScene().getRoot().getChildren().remove(currentProgressBar);
             currentProgressBar = null;
         }
 
-        // Restablecer el filtro de color
         if (currentColorAdjust != null) {
             getGameScene().getRoot().setEffect(null); 
             currentColorAdjust = null;
         }
+
+        // Resetear variables de invencibilidad
+        invincibilityRemainingTime = 0.0;
+        invinciblePlayer = null;
+        blinkTimerAccumulator = 0.0;
     }
 
-    public static void activarInvencibilidad(int milisegundos, Player player) {
+    /**
+     * Activa la invencibilidad del jugador por un tiempo determinado,
+     * incluyendo un efecto de parpadeo.
+     * @param milisegundos Duración de la invencibilidad en milisegundos.
+     * @param player El objeto Player al que se le aplica la invencibilidad.
+     */
+    public void activarInvencibilidad(int milisegundos, Player player) {
         player.setInvencibilidad(true);
-
-        TimerAction blinkAction = getGameTimer().runAtInterval(() -> {
-            player.getViewComponent().setVisible(!player.getViewComponent().isVisible());
-        }, Duration.millis(200));
-
-        getGameTimer().runOnceAfter(() -> {
-            player.setInvencibilidad(false);
-            player.getViewComponent().setVisible(true);
-            blinkAction.expire();
-        }, Duration.millis(milisegundos));
+        this.invincibilityRemainingTime = milisegundos;
+        this.invinciblePlayer = player;
+        this.blinkTimerAccumulator = 0.0; // Reiniciar el acumulador de parpadeo
     }
 }

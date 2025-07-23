@@ -20,7 +20,14 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.component.Component;
 import GameSettings.Player;
-import com.almasb.fxgl.texture.Texture; // Importar Texture
+import com.almasb.fxgl.texture.Texture;
+import component.Items.CauchoComponent;
+import component.Items.PapelComponent;
+import component.Items.RingComponent;
+import component.Items.TrashComponent;
+import component.Enemigos.EggmanComponent;
+import component.Enemigos.RobotComponent;
+
 
 public class GameFactory implements EntityFactory {
     
@@ -69,7 +76,11 @@ public class GameFactory implements EntityFactory {
         return createPlayerBase(data, new KnucklesComponent());
     }
 
-    // Nuevo método para la entidad "fondo"
+    /**
+     * Crea la entidad "fondo".
+     * @param data Datos de spawn.
+     * @return Entidad de fondo.
+     */
     @Spawns("fondo")
     public Entity newBackground(SpawnData data) {
         // Carga la textura del fondo. Asegúrate de que "fondo.png" esté en assets/textures/
@@ -105,54 +116,48 @@ public class GameFactory implements EntityFactory {
                 .build();
     }
 
-     private Entity createItem(SpawnData data, EntityType type, Component itemComponent) {
+    /**
+     * Método base privado para crear ítems (anillos, basura, papel, caucho).
+     * @param data Datos de spawn.
+     * @param type Tipo de entidad del ítem.
+     * @param itemComponent Componente específico del ítem.
+     * @return Entidad del ítem.
+     */
+    private Entity createItem(SpawnData data, EntityType type, Component itemComponent) {
         Entity item = entityBuilder(data)
                 .type(type)
                 .bbox(new HitBox(new Point2D(0, 0), BoundingShape.circle(12)))
                 .with(itemComponent)
                 .with(new CollidableComponent(true))
                 .build();
-        // Manera unificada y recomendada de asignar propiedades
         item.getProperties().setValue("id", UUID.randomUUID().toString());
         return item;
     }
 
-     @Spawns("ring")
+    @Spawns("ring")
     public Entity ring(SpawnData data) {
-        return createItem(data, EntityType.RING, new component.Items.RingComponent());
+        return createItem(data, EntityType.RING, new RingComponent());
     }
 
     @Spawns("basura")
     public Entity basura(SpawnData data) {
-        Entity trash = createItem(data, EntityType.BASURA, new component.Items.TrashComponent());
-        trash.getProperties().setValue("tipo", "basura");
+        Entity trash = createItem(data, EntityType.BASURA, new TrashComponent());
+        trash.getProperties().setValue("tipo", "basura"); // Añadir propiedad de tipo
         return trash;
     }
 
     @Spawns("papel")
     public Entity papel(SpawnData data) {
-        Entity papel = entityBuilder(data)
-                .type(EntityType.PAPEL)
-                .bbox(new HitBox(new Point2D(0, 0), BoundingShape.circle(12)))
-                .with(new component.Items.PapelComponent())
-                .with(new CollidableComponent(true))
-                .with("trashId", UUID.randomUUID().toString())
-                .build();
-        papel.getProperties().setValue("id", java.util.UUID.randomUUID().toString());
-        return papel;
+        Entity paper = createItem(data, EntityType.PAPEL, new PapelComponent());
+        paper.getProperties().setValue("tipo", "papel"); // Añadir propiedad de tipo
+        return paper;
     }
 
     @Spawns("caucho")
     public Entity caucho(SpawnData data) {
-        Entity caucho = entityBuilder(data)
-                .type(EntityType.CAUCHO)
-                .bbox(new HitBox(new Point2D(0, 0), BoundingShape.circle(12)))
-                .with(new component.Items.CauchoComponent())
-                .with(new CollidableComponent(true))
-                .with("trashId", UUID.randomUUID().toString())
-                .build();
-        caucho.getProperties().setValue("id", java.util.UUID.randomUUID().toString());
-        return caucho;
+        Entity rubber = createItem(data, EntityType.CAUCHO, new CauchoComponent());
+        rubber.getProperties().setValue("tipo", "caucho"); // Añadir propiedad de tipo
+        return rubber;
     }
 
     @Spawns("arbol")
@@ -174,7 +179,7 @@ public class GameFactory implements EntityFactory {
                 .bbox(new HitBox(new Point2D(10, 10), BoundingShape.circle(35))) // radio 32 centrada
                 .with(physics)
                 .with(new CollidableComponent(true))
-                .with(new component.Enemigos.RobotComponent())
+                .with(new RobotComponent())
                 .with("altura", 100.0)
                 .build(); 
 
@@ -197,7 +202,7 @@ public class GameFactory implements EntityFactory {
                 .bbox(new HitBox(new Point2D(10, 10), BoundingShape.circle(40)))
                 .with(physics)
                 .with(new CollidableComponent(true))
-                .with(new component.Enemigos.EggmanComponent())
+                .with(new EggmanComponent())
                 .with("altura", 100.0)
                 .build();
 

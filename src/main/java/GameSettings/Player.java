@@ -16,9 +16,24 @@ public class Player extends Entity {
     private String id = "";
     private Connection<Bundle> conexion;
     private boolean invencible = false;
+    private PlayerComponent playerComponent; // Referencia al PlayerComponent
 
+    // Constructor vacío, para ser usado cuando la entidad Player es creada por FXGL
+    public Player() {
+        // El playerComponent se establecerá externamente después de que la entidad sea spawnada
+    }
+
+    /**
+     * Realiza una acción en el PlayerComponent si está presente.
+     * @param action La acción (método) a ejecutar en el PlayerComponent.
+     */
     private void performAction(java.util.function.Consumer<PlayerComponent> action) {
-        getComponentOptional(PlayerComponent.class).ifPresent(action);
+        if (playerComponent != null) {
+            action.accept(playerComponent);
+        } else {
+            // Este error indica que playerComponent no fue seteado correctamente
+            System.err.println("ERROR: playerComponent es nulo cuando se intenta la acción para " + getTipo() + " (en Player.java). La acción no se puede realizar.");
+        }
     }
 
     public void moverIzquierda() { performAction(PlayerComponent::moverIzquierda); }
@@ -28,16 +43,20 @@ public class Player extends Entity {
     public void interactuar() { performAction(PlayerComponent::interactuar); }
     
     public String getTipo() {
-        return getComponentOptional(PlayerComponent.class).map(PlayerComponent::getTipo).orElse("");
+        // Si playerComponent es nulo aquí, significa que no se ha seteado correctamente.
+        return playerComponent != null ? playerComponent.getTipo() : "Desconocido";
     }
 
     public void transformarSuperSonic() {
-        if (!isInvencible()) {
-            this.getComponentOptional(SonicComponent.class).ifPresent(SonicComponent::transformarSuperSonic);
-        } else {
-            this.getComponentOptional(SonicComponent.class).ifPresent(SonicComponent::destransformar);
+        if (this.hasComponent(SonicComponent.class)) { // Asegurarse de que es Sonic
+            SonicComponent sonicComp = this.getComponent(SonicComponent.class);
+            if (!isInvencible()) {
+                sonicComp.transformarSuperSonic();
+            } else {
+                sonicComp.destransformar();
+            }
+            setInvencibilidad(!isInvencible());
         }
-        setInvencibilidad(!isInvencible());
     }
     
     // Getters y Setters
@@ -50,4 +69,10 @@ public class Player extends Entity {
     public int getVidas() { return vidas; }
     public void restarVida() { vidas--; }
     public boolean estaMuerto() { return vidas <= 0; }
+
+    // Setter para playerComponent, para ser llamado desde ClientGameApp
+    public void setPlayerComponent(PlayerComponent component) {
+        this.playerComponent = component;
+        System.out.println("DEBUG: PlayerComponent seteado en Player.java para tipo: " + (component != null ? component.getTipo() : "null"));
+    }
 }

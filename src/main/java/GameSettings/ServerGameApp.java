@@ -29,6 +29,7 @@ public class ServerGameApp extends GameApplication implements Serializable {
     private final Set<Integer> eventosDisparados = new HashSet<>();
 
     private com.almasb.fxgl.net.Server<Bundle> server;
+    private long updateCount = 0; // Contador para las actualizaciones del juego
 
     @Override
     protected void initSettings(GameSettings gameSettings) {
@@ -83,7 +84,6 @@ public class ServerGameApp extends GameApplication implements Serializable {
             basuraEntidad.getProperties().setValue("tipo", tipo);
             basuras.put(id, basuraEntidad);
         }
-        basuras.size(); 
     }
 
     /**
@@ -118,6 +118,7 @@ public class ServerGameApp extends GameApplication implements Serializable {
                     handleEggmanDamage(bundle);
                     break;
                 case "Interactuar":
+                    // Lógica de interacción si es necesaria en el servidor
                     break;
             }
         });
@@ -156,7 +157,7 @@ public class ServerGameApp extends GameApplication implements Serializable {
             crearEntidad.put("id", entry.getKey());
             crearEntidad.put("x", entry.getValue().getX());
             crearEntidad.put("y", entry.getValue().getY());
-            if (entry.getValue().getProperties().exists("tipo")) {
+            if (entry.getValue().getProperties().exists("tipo")) { // Solo si la propiedad "tipo" existe
                 crearEntidad.put("tipo", entry.getValue().getProperties().getString("tipo"));
             }
             conn.send(crearEntidad);
@@ -293,15 +294,14 @@ public class ServerGameApp extends GameApplication implements Serializable {
         }
     }
 
-       @Override
+    @Override
     protected void onUpdate(double tpf) {
-        int updateCount = 0;
         // Incrementa el contador de actualizaciones en cada frame
         updateCount++;
 
         // Sincroniza la posición de las entidades no controladas por jugadores a un ritmo fijo.
-        // Ahora se usa el contador de actualizaciones en lugar de getTick().
-        if (updateCount % 6 == 0) { // 10 actualizaciones por segundo (60 FPS / 6 = 10)
+        // Se sincroniza cada 6 ticks (aprox. 10 veces por segundo a 60 FPS).
+        if (updateCount % 6 == 0) { 
             // Sincroniza robots
             for (Map.Entry<String, Entity> entry : robots.entrySet()) {
                 Bundle pos = new Bundle("SyncRobotPos");
