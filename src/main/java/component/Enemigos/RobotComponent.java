@@ -11,7 +11,7 @@ public class RobotComponent extends EnemyComponent {
 
     // Define las características específicas del robot
     private static final double VELOCIDAD = 50;
-    private static final double DISTANCIA_PATRULLAJE = 100;
+    private static final double DISTANCIA_PATRULLAJE = 500;
     private static final int VIDAS = 1;
 
     public RobotComponent() {
