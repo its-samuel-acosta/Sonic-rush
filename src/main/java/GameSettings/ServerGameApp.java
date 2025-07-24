@@ -124,7 +124,7 @@ public class ServerGameApp extends GameApplication implements Serializable {
                 case "EliminarRobot":
                     handleRobotDefeated(bundle);
                     break;
-                case "DamageRobot": // <- NUEVO CASO
+                case "DamageRobot":
                     handleRobotDamage(bundle);
                     break;
                 case "DañoEggman":

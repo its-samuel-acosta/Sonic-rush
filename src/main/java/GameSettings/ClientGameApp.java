@@ -161,7 +161,6 @@ public class ClientGameApp extends GameApplication {
 
         root.getChildren().addAll(title, btnPlay, btnHelp, btnAbout, btnScores);
         // Eliminar o comentar la línea del color de fondo plano
-        // root.setStyle("-fx-background-color: #0c0c0cff;");
 
         // Usar StackPane para poner la imagen de fondo detrás del VBox
         StackPane stack = new StackPane();
@@ -277,7 +276,6 @@ public class ClientGameApp extends GameApplication {
 
             root.getChildren().addAll(title, btnSonic, btnTails, btnKnuckles);
             // Eliminar o comentar la línea del color de fondo plano
-            // root.setStyle("-fx-background-color: #080808ff;");
 
             // Usar StackPane para poner la imagen de fondo detrás del VBox
             StackPane stack = new StackPane();
@@ -425,7 +423,7 @@ public class ClientGameApp extends GameApplication {
             conn.send(hola);
             Platform.runLater(() -> onClient()); // Asegura que se ejecuta en el hilo FX
         });
-        // Eliminados setOnDisconnected y setOnConnectionFailed por incompatibilidad con FXGL
+
         client.connectAsync();
 
         // Inicializar y empezar el temporizador del juego
@@ -493,7 +491,7 @@ public class ClientGameApp extends GameApplication {
                     break;
                 }
 
-                                case "Interactuar": { // <- NUEVO CASO
+                                case "Interactuar": { 
                     String id = bundle.get("id");
                     if (!player.getId().equals(id)) { // No animar al jugador que envió el mensaje
                         Player remotePlayer = personajeRemotos.get(id);
@@ -807,8 +805,8 @@ public class ClientGameApp extends GameApplication {
                     // Solo puede golpear si no está en el aire.
                     if (!player.getComponent(PhysicsComponent.class).isMovingY()) {
                         // Define el área de golpe en frente de Knuckles.
-                        double punchWidth = 45;
-                        double punchHeight = 40;
+                        double punchWidth = 48;
+                        double punchHeight = 48;
                         double punchX = player.getScaleX() > 0 
                             ? player.getRightX() 
                             : player.getX() - punchWidth;
@@ -1059,7 +1057,6 @@ public class ClientGameApp extends GameApplication {
                 conexion.send(bundle);
             }
 
-            // GAME OVER CONDITION BY HEIGHT
             if (player.getY() > 1000) { // Si el jugador cae por debajo de Y=1000 (fuera de pantalla)
                 showGameOver();
             }
@@ -1088,13 +1085,5 @@ public class ClientGameApp extends GameApplication {
             gameLogic.onUpdate(tpf);
         }
 
-        // Eliminar el mensaje de debug de entidades PLAYER
-        // List<Entity> players = getGameWorld().getEntitiesByType(GameFactory.EntityType.PLAYER);
-        // System.out.print("[DEBUG] Entidades PLAYER en este cliente: " + players.size() + " | IDs: ");
-        // for (Entity ent : players) {
-        //     String pid = (ent instanceof Player) ? ((Player)ent).getId() : "?";
-        //     System.out.print(pid + ", ");
-        // }
-        // System.out.println();
     }
 }
