@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javafx.geometry.Point2D;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -53,8 +54,6 @@ public class ClientGameApp extends GameApplication {
     private int contadorBasura = 0;
     private int contadorPapel = 0;
     private int contadorCaucho = 0;
-    private boolean flag_Interactuar = false;
-    private Entity stand_by;
     public GameLogic gameLogic;
 
     private TimerAction gameTimerAction;
@@ -504,6 +503,17 @@ public class ClientGameApp extends GameApplication {
                     break;
                 }
 
+                                case "Interactuar": { // <- NUEVO CASO
+                    String id = bundle.get("id");
+                    if (!player.getId().equals(id)) { // No animar al jugador que envió el mensaje
+                        Player remotePlayer = personajeRemotos.get(id);
+                        if (remotePlayer != null) {
+                            remotePlayer.interactuar(); // Ejecuta la animación de interacción en el jugador remoto
+                        }
+                    }
+                    break;
+                }
+
                 case "EggmanEliminado": {
                     showGameWon();
                     break;
@@ -786,25 +796,52 @@ public class ClientGameApp extends GameApplication {
                 if (!isPlayerReady || player == null) {
                     return;
                 }
-                if (flag_Interactuar) {
-                    Bundle bundle = new Bundle("Interactuar");
-                    bundle.put("id", player.getId());
-                    bundle.put("tipo", player.getTipo());
-                    conexion.send(bundle);
-                    recogerBasura(player, stand_by);
+
+                // Llama al método de interacción del jugador para activar la animación localmente.
+                player.interactuar();
+
+                // Envía un mensaje al servidor para que otros clientes vean la animación.
+                Bundle bundle = new Bundle("Interactuar");
+                bundle.put("id", player.getId());
+                conexion.send(bundle);
+
+                // Lógica específica del personaje
+                String playerType = player.getTipo();
+
+                if (playerType.equals("knuckles")) {
+                    // Solo puede golpear si no está en el aire.
+                    if (!player.getComponent(PhysicsComponent.class).isMovingY()) {
+                        // Define el área de golpe en frente de Knuckles.
+                        double punchWidth = 45;
+                        double punchHeight = 40;
+                        double punchX = player.getScaleX() > 0 
+                            ? player.getRightX() 
+                            : player.getX() - punchWidth;
+                        double punchY = player.getY();
+
+                        // Busca enemigos en el área de golpe. (Rectangle2D.Double es una implementación de Rectangle2D)
+                        getGameWorld().getEntitiesInRange(new javafx.geometry.Rectangle2D(punchX, punchY, punchWidth, punchHeight)).stream()
+                            .filter(e -> e.isType(GameFactory.EntityType.ROBOT_ENEMIGO))
+                            .findFirst() // Golpea solo al primer enemigo encontrado.
+                            .ifPresent(enemy -> {
+                                String robotId = enemy.getProperties().getString("id");
+                                Bundle damageBundle = new Bundle("DamageRobot");
+                                damageBundle.put("robotId", robotId);
+                                conexion.send(damageBundle); // Envía el mensaje de daño al servidor.
+                            });
+                    }
+                } else if (playerType.equals("sonic")) {
+                    SonicComponent sonicComp = player.getComponent(SonicComponent.class);
+                    // Intenta transformar a Sonic. El método devuelve true si la transformación es exitosa.
+                    if (sonicComp != null && sonicComp.transform()) {
+                        gameLogic.activarInvencibilidad(6000, player); // Activa 6 segundos de invencibilidad.
+                        
+                        // Programa la reversión al estado normal después de 6 segundos.
+                        getGameTimer().runOnceAfter(sonicComp::revert, Duration.seconds(6));
+                    }
                 }
             }
         }, KeyCode.E);
-
-        getInput().addAction(new UserAction("Transformar") {
-            @Override
-            protected void onActionBegin() {
-                if (!isPlayerReady || player == null) {
-                    return;
-                }
-                player.transformarSuperSonic();
-            }
-        }, KeyCode.P);
 
         getInput().addAction(new UserAction("Desactivar filtro") {
             @Override
@@ -983,9 +1020,6 @@ public class ClientGameApp extends GameApplication {
         contadorBasura = 0;
         contadorPapel = 0;
         contadorCaucho = 0;
-        flag_Interactuar = false;
-        stand_by = null;
-
         // Reiniciar el objeto player a una nueva instancia
         player = null;
         isPlayerReady = false; // El jugador ya no está listo hasta que se vuelva a crear

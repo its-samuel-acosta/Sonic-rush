@@ -101,30 +101,42 @@ public class ServerGameApp extends GameApplication implements Serializable {
                 case "Hola":
                     handleNewClient(conn);
                     break;
+    
                 case "SolicitarCrearPersonaje":
                     handleCharacterCreation(bundle);
                     break;
                 case "Mover a la izquierda":
                 case "Mover a la derecha":
+       
                 case "Saltar":
                 case "Detente":
                 case "SyncPos":
                     handlePlayerMovement(conn, bundle);
                     break;
+               
                 case "RecogerAnillo":
                     handleRingPickup(bundle);
                     break;
-                case "RecogerBasura":
+                case "RecogerPlastico":
                     handleTrashPickup(bundle);
                     break;
+ 
                 case "EliminarRobot":
                     handleRobotDefeated(bundle);
+                    break;
+                case "DamageRobot": // <- NUEVO CASO
+                    handleRobotDamage(bundle);
                     break;
                 case "DañoEggman":
                     handleEggmanDamage(bundle);
                     break;
                 case "Interactuar":
-                    // Lógica de interacción si es necesaria en el servidor
+                    // Retransmitir la interacción a otros clientes
+                    for (Connection<Bundle> c : server.getConnections()) {
+                        if (c != conn) {
+                            c.send(bundle);
+                        }
+                    }
                     break;
             }
         });
@@ -151,6 +163,24 @@ public class ServerGameApp extends GameApplication implements Serializable {
         sendEntitiesToClient(conn, "crearRing", anillos);
         sendEntitiesToClient(conn, "crearbasura", basuras);
         sendEntitiesToClient(conn, "CrearRobotEnemigo", robots);
+    }
+
+        private void handleRobotDamage(Bundle bundle) {
+        String robotId = bundle.get("robotId");
+        Entity robot = robots.get(robotId);
+        if (robot != null) {
+            var enemyComponent = robot.getComponent(component.Enemigos.EnemyComponent.class);
+            enemyComponent.restarVida(); // Resta una vida
+
+            if (enemyComponent.estaMuerto()) {
+                robots.remove(robotId);
+                robot.removeFromWorld();
+                
+                Bundle robotEliminado = new Bundle("RobotEliminado");
+                robotEliminado.put("robotId", robotId);
+                server.broadcast(robotEliminado);
+            }
+        }
     }
     
     /**

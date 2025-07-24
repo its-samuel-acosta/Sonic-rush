@@ -4,7 +4,6 @@ import com.almasb.fxgl.core.serialization.Bundle;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.net.Connection;
 import component.Personajes.PlayerComponent;
-import component.Personajes.SonicComponent;
 
 /**
  * La clase Player maneja el estado (vidas, ID) y delega acciones al PlayerComponent.
@@ -46,19 +45,7 @@ public class Player extends Entity {
         // Si playerComponent es nulo aquí, significa que no se ha seteado correctamente.
         return playerComponent != null ? playerComponent.getTipo() : "Desconocido";
     }
-
-    public void transformarSuperSonic() {
-        if (this.hasComponent(SonicComponent.class)) { // Asegurarse de que es Sonic
-            SonicComponent sonicComp = this.getComponent(SonicComponent.class);
-            if (!isInvencible()) {
-                sonicComp.transformarSuperSonic();
-            } else {
-                sonicComp.destransformar();
-            }
-            setInvencibilidad(!isInvencible());
-        }
-    }
-    
+ 
     // Getters y Setters
     public void setInvencibilidad(boolean flag) { this.invencible = flag; }
     public boolean isInvencible() { return invencible; }
