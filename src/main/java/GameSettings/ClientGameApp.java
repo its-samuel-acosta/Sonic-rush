@@ -665,12 +665,17 @@ public class ClientGameApp extends GameApplication {
                 }
 
                 case "SyncPos": {
-                    String id = bundle.get("id");
-                    double x = ((Number)bundle.get("x")).doubleValue();
-                    double y = ((Number)bundle.get("y")).doubleValue();
-                    if (player == null || !id.equals(player.getId())) {
-                        // Es un personaje remoto
-                        remoteTargetPositions.put(id, new Point2D(x, y));
+                    String syncId = bundle.get("id");
+                    if (player != null && syncId.equals(player.getId())) {
+                        return; // Ignorar la posición propia
+                    }
+
+                    Player remotePlayer = personajeRemotos.get(syncId);
+                    if (remotePlayer != null) {
+                        Number xNum = bundle.get("x");
+                        Number yNum = bundle.get("y");
+                        // Actualizar la posición objetivo para interpolación suave
+                        remoteTargetPositions.put(syncId, new Point2D(xNum.doubleValue(), yNum.doubleValue()));
                     }
                     break;
                 }
