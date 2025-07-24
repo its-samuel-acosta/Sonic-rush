@@ -169,7 +169,7 @@ public class ServerGameApp extends GameApplication implements Serializable {
         String robotId = bundle.get("robotId");
         Entity robot = robots.get(robotId);
         if (robot != null) {
-            var enemyComponent = robot.getComponent(component.Enemigos.EnemyComponent.class);
+            var enemyComponent = robot.getComponent(component.Enemigos.RobotComponent.class);
             enemyComponent.restarVida(); // Resta una vida
 
             if (enemyComponent.estaMuerto()) {
@@ -211,9 +211,17 @@ public class ServerGameApp extends GameApplication implements Serializable {
             personaje.put("x", 50.0);
             personaje.put("y", 150.0);
             personajesExistentes.put(id, personaje);
-            server.broadcast(personaje);
-        } else {
-            server.broadcast(personajesExistentes.get(id));
+        }
+        // Siempre que se crea o se solicita un personaje, reenviamos TODOS los personajes existentes a TODOS los clientes
+        for (Connection<Bundle> c : server.getConnections()) {
+            personajesExistentes.values().forEach(personaje -> {
+                Bundle copia = new Bundle("Crear Personaje");
+                copia.put("id", personaje.get("id")); 
+                copia.put("tipo", personaje.get("tipo")); 
+                copia.put("x", personaje.get("x")); 
+                copia.put("y", personaje.get("y")); 
+                c.send(copia);
+            });
         }
     }
 
