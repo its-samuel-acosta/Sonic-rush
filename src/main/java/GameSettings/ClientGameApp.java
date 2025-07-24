@@ -118,18 +118,15 @@ public class ClientGameApp extends GameApplication {
         String baseButtonStyle = "-fx-font-family: 'Impact'; -fx-font-size: 22px; -fx-padding: 10px 20px; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);";
 
         String playButtonStyle = baseButtonStyle + "-fx-background-color: #0000FF;"; // Azul
-        String playButtonHoverStyle = "-fx-background-color: #0000CC;";
         btnPlay.setTextFill(Color.WHITE);
 
         String helpButtonStyle = baseButtonStyle + "-fx-background-color: #f75f07ff;"; // Naranja
-        String helpButtonHoverStyle = "-fx-background-color: #f75f07ff;";
         btnHelp.setTextFill(Color.BLACK);
 
         String aboutButtonStyle = baseButtonStyle + "-fx-background-color: #FF0000;"; // Rojo
-        String aboutButtonHoverStyle = "-fx-background-color: #CC0000;";
+
 
         String scoresButtonStyle = baseButtonStyle + "-fx-background-color: #800080;"; // Púrpura
-        String scoresButtonHoverStyle = "-fx-background-color: #6A0DAD;";
         btnScores.setTextFill(Color.WHITE);
 
         btnPlay.setStyle(playButtonStyle);
@@ -137,16 +134,12 @@ public class ClientGameApp extends GameApplication {
         btnAbout.setStyle(aboutButtonStyle);
         btnScores.setStyle(scoresButtonStyle);
 
-        btnPlay.setOnMouseEntered(e -> btnPlay.setStyle(playButtonHoverStyle));
         btnPlay.setOnMouseExited(e -> btnPlay.setStyle(playButtonStyle));
 
-        btnHelp.setOnMouseEntered(e -> btnHelp.setStyle(helpButtonHoverStyle));
         btnHelp.setOnMouseExited(e -> { btnHelp.setStyle(helpButtonStyle); btnHelp.setTextFill(Color.BLACK); });
         
-        btnAbout.setOnMouseEntered(e -> btnAbout.setStyle(aboutButtonHoverStyle));
         btnAbout.setOnMouseExited(e -> btnAbout.setStyle(aboutButtonStyle));
 
-        btnScores.setOnMouseEntered(e -> btnScores.setStyle(scoresButtonHoverStyle));
         btnScores.setOnMouseExited(e -> btnScores.setStyle(scoresButtonStyle));
 
         btnPlay.setOnAction(e -> {
@@ -246,27 +239,24 @@ public class ClientGameApp extends GameApplication {
             String baseCharButtonStyle = "-fx-font-family: 'Impact'; -fx-font-size: 20px; -fx-padding: 10px 20px; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);";
 
             String sonicButtonStyle = baseCharButtonStyle + "-fx-background-color: #0000FF;";
-            String sonicButtonHoverStyle = "-fx-background-color: #0000CC;";
             btnSonic.setTextFill(Color.WHITE);
 
             String tailsButtonStyle = baseCharButtonStyle + "-fx-background-color: #f75f07ff;";
-            String tailsButtonHoverStyle = "-fx-background-color: #f75f07ff;";
             btnTails.setTextFill(Color.BLACK);
 
             String knucklesButtonStyle = baseCharButtonStyle + "-fx-background-color: #FF0000;";
-            String knucklesButtonHoverStyle = "-fx-background-color: #CC0000;";
+
 
             btnSonic.setStyle(sonicButtonStyle);
             btnTails.setStyle(tailsButtonStyle);
             btnKnuckles.setStyle(knucklesButtonStyle);
 
-            btnSonic.setOnMouseEntered(e -> btnSonic.setStyle(sonicButtonHoverStyle));
+
             btnSonic.setOnMouseExited(e -> btnSonic.setStyle(sonicButtonStyle));
             
-            btnTails.setOnMouseEntered(e -> btnTails.setStyle(tailsButtonHoverStyle));
+
             btnTails.setOnMouseExited(e -> { btnTails.setStyle(tailsButtonStyle); btnTails.setTextFill(Color.BLACK); });
             
-            btnKnuckles.setOnMouseEntered(e -> btnKnuckles.setStyle(knucklesButtonHoverStyle));
             btnKnuckles.setOnMouseExited(e -> btnKnuckles.setStyle(knucklesButtonStyle));
 
             btnSonic.setOnAction(e -> {

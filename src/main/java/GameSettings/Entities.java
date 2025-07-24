@@ -36,10 +36,13 @@ public class Entities {
     static List<int[]> posicionesRobots = List.of(
         new int[]{600 , 600},
         new int[]{1300, 500},
-        new int[]{1400, 500},
+        new int[]{1400, 200},
         new int[]{2000, 450},
         new int[]{2200, 500},
-        new int[]{3300, 430}
+        new int[]{3300, 430},
+        new int[]{3000, 430},
+        new int[]{1500, 500},
+        new int[]{1600, 100}
         // mas robots
     );
 
