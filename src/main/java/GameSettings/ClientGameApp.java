@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.geometry.Point2D;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 import javafx.scene.image.Image;
@@ -65,6 +66,8 @@ public class ClientGameApp extends GameApplication {
 
     private boolean pendingReset = false;
     private boolean isPlayerReady = false; // Nueva bandera para controlar la disponibilidad del jugador
+    private final Map<String, Point2D> remoteTargetPositions = new HashMap<>();
+    private String serverIP = null; // Nueva variable para la IP del servidor
 
     @Override
     protected void initSettings(GameSettings gameSettings) {
@@ -149,7 +152,7 @@ public class ClientGameApp extends GameApplication {
 
         btnPlay.setOnAction(e -> {
             stage.close();
-            showCharacterSelectionMenu();
+            showServerIPDialog(); // Pedir IP antes de selección de personaje
         });
 
         btnHelp.setOnAction(e -> {
@@ -176,6 +179,45 @@ public class ClientGameApp extends GameApplication {
         stage.setScene(scene);
         stage.setTitle("Menú Principal de Juego");
         stage.show();
+    }
+
+    /**
+     * Muestra un diálogo para introducir la IP del servidor.
+     */
+    private void showServerIPDialog() {
+        Platform.runLater(() -> {
+            Stage dialog = new Stage();
+            VBox root = new VBox(20);
+            root.setAlignment(Pos.CENTER);
+            root.setStyle("-fx-background-color: #001f3f; -fx-padding: 30px;");
+            Text title = new Text("Introduce la IP del servidor");
+            title.setFont(javafx.scene.text.Font.font("Impact", 28));
+            title.setFill(Color.WHITE);
+            title.setStyle("-fx-effect: dropshadow(gaussian, black, 4, 0.7, 2, 2);");
+            javafx.scene.control.TextField ipField = new javafx.scene.control.TextField();
+            ipField.setPromptText("Ejemplo: 123.123.123.123");
+            ipField.setMaxWidth(220);
+            ipField.setStyle("-fx-font-size: 18px; -fx-background-radius: 8px; -fx-background-color: #003366; -fx-text-fill: white; -fx-prompt-text-fill: #b0c4de; -fx-border-color: #0055aa; -fx-border-radius: 8px; -fx-padding: 8px;");
+            Button btnOK = new Button("Conectar");
+            btnOK.setStyle("-fx-font-family: 'Impact'; -fx-font-size: 20px; -fx-background-color: #0000FF; -fx-text-fill: white; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
+            btnOK.setOnMouseEntered(ev -> btnOK.setStyle("-fx-font-family: 'Impact'; -fx-font-size: 20px; -fx-background-color: #003366; -fx-text-fill: white; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);"));
+            btnOK.setOnMouseExited(ev -> btnOK.setStyle("-fx-font-family: 'Impact'; -fx-font-size: 20px; -fx-background-color: #0000FF; -fx-text-fill: white; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);"));
+            btnOK.setOnAction(ev -> {
+                String ip = ipField.getText();
+                if (ip == null || ip.trim().isEmpty()) {
+                    getDialogService().showMessageBox("Por favor, introduce una IP válida.");
+                    return;
+                }
+                serverIP = ip.trim();
+                dialog.close();
+                showCharacterSelectionMenu();
+            });
+            root.getChildren().addAll(title, ipField, btnOK);
+            Scene scene = new Scene(root, 400, 220);
+            dialog.setScene(scene);
+            dialog.setTitle("Conexión al servidor");
+            dialog.show();
+        });
     }
 
     /**
@@ -383,13 +425,18 @@ public class ClientGameApp extends GameApplication {
         spawn("fondo");
         setLevelFromMap("mapazo.tmx");
 
-        var client = getNetService().newTCPClient("localhost", 55555);
+        if (serverIP == null) {
+            getDialogService().showMessageBox("Error: No se ha especificado la IP del servidor.");
+            return;
+        }
+        var client = getNetService().newTCPClient(serverIP, 50000);
         client.setOnConnected(conn -> {
             conexion = conn;
             Bundle hola = new Bundle("Hola");
             conn.send(hola);
             Platform.runLater(() -> onClient()); // Asegura que se ejecuta en el hilo FX
         });
+        // Eliminados setOnDisconnected y setOnConnectionFailed por incompatibilidad con FXGL
         client.connectAsync();
 
         // Inicializar y empezar el temporizador del juego
@@ -433,6 +480,13 @@ public class ClientGameApp extends GameApplication {
                     break;
                 }
 
+                case "ServidorLleno": {
+                    getDialogService().showMessageBox("El servidor está lleno. Máximo 3 jugadores.", () -> {
+                        Platform.runLater(this::performResetAndReturnToMenu);
+                    });
+                    break;
+                }
+
                 case "AnilloRecogido": {
                     String ringId = bundle.get("ringId");
 
@@ -443,7 +497,7 @@ public class ClientGameApp extends GameApplication {
 
                     // Update counter if the player is oneself
                     String playerId = bundle.get("playerId");
-                    if (playerId.equals(player.getId())) {
+                    if (player != null && playerId.equals(player.getId())) {
                         contadorAnillos++;
                         gameLogic.cambiarTextoAnillos("anillos: " + contadorAnillos);
                     }
@@ -479,7 +533,7 @@ public class ClientGameApp extends GameApplication {
                             String tipoBasura = entity.getProperties().getString("tipo");
                             entity.removeFromWorld();
 
-                            if (bundle.get("playerId").equals(player.getId())) {
+                            if (player != null && bundle.get("playerId").equals(player.getId())) {
                                 switch (tipoBasura) {
                                     case "papel":
                                         contadorPapel++;
@@ -553,7 +607,6 @@ public class ClientGameApp extends GameApplication {
                             if (idPendiente != null) {
                                 player.setId(idPendiente);
                             }
-                            // Eliminar los System.out.print y System.out.println relacionados con logs de componentes y PlayerComponent tras el spawn del jugador.
                             // Buscar PlayerComponent por instanceof
                             PlayerComponent pComp = null;
                             for (var comp : player.getComponents()) {
@@ -578,10 +631,16 @@ public class ClientGameApp extends GameApplication {
                         Player remotePlayer = personajeRemotos.get(id);
                         if (remotePlayer == null) {
                             Entity entidad = spawn(tipo, x, y);
-                            remotePlayer = (Player) entidad;;
+                            remotePlayer = (Player) entidad;
                             personajeRemotos.put(id, remotePlayer);
-                            // Lo mismo para jugadores remotos
-                            PlayerComponent pComp = remotePlayer.getComponentOptional(PlayerComponent.class).orElse(null);
+                            // Buscar y asignar PlayerComponent para el jugador remoto
+                            PlayerComponent pComp = null;
+                            for (var comp : remotePlayer.getComponents()) {
+                                if (comp instanceof PlayerComponent) {
+                                    pComp = (PlayerComponent) comp;
+                                    break;
+                                }
+                            }
                             if (pComp != null) {
                                 remotePlayer.setPlayerComponent(pComp);
                             } else {
@@ -596,17 +655,12 @@ public class ClientGameApp extends GameApplication {
                 }
 
                 case "SyncPos": {
-                    String syncId = bundle.get("id");
-                    if (syncId.equals(player.getId())) {
-                        return; // Ignore yourself
-                    }
-
-                    Player remotePlayer = personajeRemotos.get(syncId);
-                    if (remotePlayer != null) {
-                        Number xNum = bundle.get("x");
-                        Number yNum = bundle.get("y");
-                        remotePlayer.setX(xNum.doubleValue());
-                        remotePlayer.setY(yNum.doubleValue());
+                    String id = bundle.get("id");
+                    double x = ((Number)bundle.get("x")).doubleValue();
+                    double y = ((Number)bundle.get("y")).doubleValue();
+                    if (player == null || !id.equals(player.getId())) {
+                        // Es un personaje remoto
+                        remoteTargetPositions.put(id, new Point2D(x, y));
                     }
                     break;
                 }
@@ -637,7 +691,7 @@ public class ClientGameApp extends GameApplication {
                 case "Saltar":
                 case "Detente": {
                     String moveId = bundle.get("id");
-                    if (moveId.equals(player.getId())) {
+                    if (player != null && moveId.equals(player.getId())) {
                         return; // Ignore your own messages
                     }
                     Player remotePlayer = personajeRemotos.get(moveId);
@@ -982,9 +1036,36 @@ public class ClientGameApp extends GameApplication {
             }
         }
 
+        // Interpolación de personajes remotos
+        for (Entity e : getGameWorld().getEntitiesByType(GameFactory.EntityType.PLAYER)) {
+            PlayerComponent pc = e.getComponentOptional(PlayerComponent.class).orElse(null);
+            if (pc != null && player != null) {
+                Player ePlayer = (Player) e;
+                if (!ePlayer.getId().equals(player.getId())) {
+                    String id = ePlayer.getId();
+                    Point2D target = remoteTargetPositions.get(id);
+                    if (target != null) {
+                        double lerp = 0.15; // Factor de suavizado (ajustable)
+                        double newX = e.getX() + (target.getX() - e.getX()) * lerp;
+                        double newY = e.getY() + (target.getY() - e.getY()) * lerp;
+                        e.setPosition(newX, newY);
+                    }
+                }
+            }
+        }
+
         // Actualizar la lógica del juego, incluyendo la invencibilidad
         if (gameLogic != null) {
             gameLogic.onUpdate(tpf);
         }
+
+        // Eliminar el mensaje de debug de entidades PLAYER
+        // List<Entity> players = getGameWorld().getEntitiesByType(GameFactory.EntityType.PLAYER);
+        // System.out.print("[DEBUG] Entidades PLAYER en este cliente: " + players.size() + " | IDs: ");
+        // for (Entity ent : players) {
+        //     String pid = (ent instanceof Player) ? ((Player)ent).getId() : "?";
+        //     System.out.print(pid + ", ");
+        // }
+        // System.out.println();
     }
 }

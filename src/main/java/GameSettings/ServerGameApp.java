@@ -18,7 +18,7 @@ import static GameSettings.Entities.posicionesRobots;
 import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class ServerGameApp extends GameApplication implements Serializable {
-    private static final int SERVER_PORT = 55555;
+    private static final int SERVER_PORT = 50000;
 
     // Usar un mapa para personajes existentes mejora el rendimiento de búsqueda de O(n) a O(1)
     private final Map<String, Bundle> personajesExistentes = new HashMap<>();
@@ -43,13 +43,19 @@ public class ServerGameApp extends GameApplication implements Serializable {
     protected void initGame() {
         server = getNetService().newTCPServer(SERVER_PORT);
         server.setOnConnected(conn -> {
+            // Limitar a 3 jugadores
+            if (server.getConnections().size() > 3) {
+                Bundle lleno = new Bundle("ServidorLleno");
+                conn.send(lleno);
+                // No hay método close(), solo no continuar
+                return;
+            }
             String nuevoId = UUID.randomUUID().toString();
             Bundle tuId = new Bundle("TuID");
             tuId.put("id", nuevoId);
             conn.send(tuId);
             getExecutor().startAsyncFX(() -> onServer(conn));
         });
-        System.out.println("Servidor creado"); 
         server.startAsync();
         Jugar();
     }
@@ -130,7 +136,6 @@ public class ServerGameApp extends GameApplication implements Serializable {
      * Envía el estado actual del juego (personajes, ítems) a un cliente recién conectado.
      */
     private void handleNewClient(Connection<Bundle> conn) {
-        System.out.println("jugador se conecto"); 
         
         // Enviar personajes existentes
         personajesExistentes.values().forEach(personaje -> {
