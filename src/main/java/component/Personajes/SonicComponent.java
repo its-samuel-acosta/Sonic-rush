@@ -12,7 +12,8 @@ public class SonicComponent extends PlayerComponent {
     public static final AnimationChannel NORMAL_IDLE = new AnimationChannel(image("Personajes/sonic.png"), 21, 32, 42, Duration.seconds(4.5), 0, 20);
     public static final AnimationChannel NORMAL_CAMINA = new AnimationChannel(image("Personajes/sonic_camina.png"), 6, 44, 42, Duration.seconds(0.66), 0, 5);
     public static final AnimationChannel NORMAL_SALTO = new AnimationChannel(image("Personajes/sonic_camina.png"), 7, 44, 42, Duration.seconds(0.66), 6, 6);
-    public static final AnimationChannel SUPER_IDLE = new AnimationChannel(image("Personajes/super_sonic.png"), 7, 44, 60, Duration.seconds(1), 6, 6);
+    public static final AnimationChannel SUPER_IDLE = new AnimationChannel(image("Personajes/super_idle.png"), 21, 32, 42, Duration.seconds(4.5), 0, 20);
+    public static final AnimationChannel SUPER_CAMINA = new AnimationChannel(image("Personajes/super_sonic.png"), 8, 44, 60, Duration.seconds(0.66), 0, 7);
     public static final AnimationChannel SUPER_VUELO = new AnimationChannel(image("Personajes/super_sonic.png"), 8, 44, 60, Duration.seconds(0.66), 7, 7);
 
     private boolean isSuper = false;
@@ -74,7 +75,7 @@ public class SonicComponent extends PlayerComponent {
 
         // Cambiar a animaciones de Super Sonic
         parado = SUPER_IDLE;
-        caminando = SUPER_VUELO;
+        caminando = SUPER_CAMINA;
         saltando = SUPER_VUELO;
         
         // Aplicar la nueva animación de inmediato
