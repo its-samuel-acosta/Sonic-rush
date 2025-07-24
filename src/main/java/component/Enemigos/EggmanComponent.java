@@ -7,7 +7,7 @@ import javafx.scene.image.ImageView;
 
 public class EggmanComponent extends EnemyComponent {
    public EggmanComponent() {
-      super(75.0, 1000.0, 10);
+      super(75.0, 600.0, 10);
    }
 
    public void onAdded() {

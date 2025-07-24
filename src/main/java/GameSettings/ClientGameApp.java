@@ -304,9 +304,6 @@ public class ClientGameApp extends GameApplication {
 
         spawn("fondo");
         setLevelFromMap("mapazo.tmx");
-        
-        // Spawn de Eggman al inicio de cada partida
-        spawn("eggman", 500, 420); 
 
         var client = getNetService().newTCPClient("localhost", 55555);
         client.setOnConnected(conn -> {
