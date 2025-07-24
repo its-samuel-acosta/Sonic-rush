@@ -280,10 +280,10 @@ public class ServerGameApp extends GameApplication implements Serializable {
      */
     private void verificarEventoBasura() {
         int cantidadRestante = basuras.size(); 
-        if (cantidadRestante <= 6 && !eventosDisparados.contains(6)) {
+        if (cantidadRestante <= 5 && !eventosDisparados.contains(6)) {
             eventosDisparados.add(6);
             String eggmanId = UUID.randomUUID().toString();
-            Entity eggman = spawn("eggman", 1330, 340);
+            Entity eggman = spawn("eggman", 1600, 340);
             eggman.getProperties().setValue("id", eggmanId);
             eggmanBoss.put(eggmanId, eggman);
             Bundle crearEggman = new Bundle("CrearEggman");

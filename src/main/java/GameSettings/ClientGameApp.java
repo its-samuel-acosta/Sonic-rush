@@ -775,9 +775,7 @@ public class ClientGameApp extends GameApplication {
         });
 
         onCollisionBegin(GameFactory.EntityType.PLAYER, GameFactory.EntityType.BASURA, (jugador, basura) -> {
-            if (player.hasComponent(SonicComponent.class) || player.hasComponent(TailsComponent.class) || player.hasComponent(KnucklesComponent.class)) {
-                recogerBasura((Player)jugador, basura);
-            }
+            recogerBasura((Player)jugador, basura);
         });
 
         onCollisionBegin(GameFactory.EntityType.PLAYER, GameFactory.EntityType.PAPEL, (jugador, papel) -> {

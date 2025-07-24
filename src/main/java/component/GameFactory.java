@@ -163,15 +163,6 @@ public class GameFactory implements EntityFactory {
         return rubber;
     }
 
-    @Spawns("arbol")
-    public Entity newArbol(SpawnData data) {
-        return entityBuilder(data)
-                .type(EntityType.ARBOL)
-                .view("Escenario/arbol.png") 
-                .zIndex(1)
-                .build();
-    }
-
     @Spawns("robotEnemigo")
     public Entity robotEnemigo(SpawnData data) {
         PhysicsComponent physics = new PhysicsComponent();
