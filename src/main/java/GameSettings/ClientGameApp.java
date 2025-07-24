@@ -35,6 +35,9 @@ import java.util.List;
 import java.util.Map;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 
 public class ClientGameApp extends GameApplication {
 
@@ -90,10 +93,19 @@ public class ClientGameApp extends GameApplication {
      */
     private void showMainMenu() {
         Stage stage = new Stage();
+
+        // Cargar la imagen de fondo desde los recursos
+        Image fondoImg = new Image(getClass().getResourceAsStream("/assets/textures/background/fondo_menu.png"));
+        ImageView fondoView = new ImageView(fondoImg);
+        fondoView.setFitWidth(350); // Ajusta según el tamaño del menú
+        fondoView.setFitHeight(350);
+
         VBox root = new VBox(15);
         root.setAlignment(Pos.CENTER);
         Text title = new Text("Menú Principal");
-        title.setStyle("-fx-font-size: 24px; -fx-fill: white;");
+        title.setFont(javafx.scene.text.Font.font("Impact", 36));
+        title.setFill(Color.WHITE);
+        title.setStyle("-fx-effect: dropshadow(gaussian, black, 4, 0.7, 2, 2);");
 
         Button btnPlay = new Button("Jugar");
         Button btnHelp = new Button("Ayuda");
@@ -101,7 +113,7 @@ public class ClientGameApp extends GameApplication {
         Button btnScores = new Button("Puntuaciones");
 
         // Estilos para los botones
-        String baseButtonStyle = "-fx-font-size: 18px; -fx-padding: 10px 20px; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px;";
+        String baseButtonStyle = "-fx-font-family: 'Impact'; -fx-font-size: 22px; -fx-padding: 10px 20px; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);";
 
         String playButtonStyle = baseButtonStyle + "-fx-background-color: #0000FF;"; // Azul
         String playButtonHoverStyle = "-fx-background-color: #0000CC;";
@@ -153,8 +165,14 @@ public class ClientGameApp extends GameApplication {
         });
 
         root.getChildren().addAll(title, btnPlay, btnHelp, btnAbout, btnScores);
-        root.setStyle("-fx-background-color: #0c0c0cff;");
-        Scene scene = new Scene(root, 350, 350);
+        // Eliminar o comentar la línea del color de fondo plano
+        // root.setStyle("-fx-background-color: #0c0c0cff;");
+
+        // Usar StackPane para poner la imagen de fondo detrás del VBox
+        StackPane stack = new StackPane();
+        stack.getChildren().addAll(fondoView, root);
+
+        Scene scene = new Scene(stack, 350, 350);
         stage.setScene(scene);
         stage.setTitle("Menú Principal de Juego");
         stage.show();
@@ -166,16 +184,25 @@ public class ClientGameApp extends GameApplication {
     private void showCharacterSelectionMenu() {
         Platform.runLater(() -> { // Asegura que se ejecuta en el hilo FX
             Stage stage = new Stage();
+
+            // Cargar la imagen de fondo desde los recursos
+            Image fondoImg = new Image(getClass().getResourceAsStream("/assets/textures/background/fondo_menu.png"));
+            ImageView fondoView = new ImageView(fondoImg);
+            fondoView.setFitWidth(350); // Ajusta según el tamaño del menú
+            fondoView.setFitHeight(250);
+
             VBox root = new VBox(15);
             root.setAlignment(Pos.CENTER);
             Text title = new Text("Selecciona tu personaje");
-            title.setStyle("-fx-font-size: 24px; -fx-fill: white;");
+            title.setFont(javafx.scene.text.Font.font("Impact", 32));
+            title.setFill(Color.WHITE);
+            title.setStyle("-fx-effect: dropshadow(gaussian, black, 4, 0.7, 2, 2);");
 
             Button btnSonic = new Button("Sonic");
             Button btnTails = new Button("Tails");
             Button btnKnuckles = new Button("Knuckles");
 
-            String baseCharButtonStyle = "-fx-font-size: 18px; -fx-padding: 10px 20px; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px;";
+            String baseCharButtonStyle = "-fx-font-family: 'Impact'; -fx-font-size: 20px; -fx-padding: 10px 20px; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);";
 
             String sonicButtonStyle = baseCharButtonStyle + "-fx-background-color: #0000FF;";
             String sonicButtonHoverStyle = "-fx-background-color: #0000CC;";
@@ -218,8 +245,14 @@ public class ClientGameApp extends GameApplication {
             });
 
             root.getChildren().addAll(title, btnSonic, btnTails, btnKnuckles);
-            root.setStyle("-fx-background-color: #080808ff;");
-            Scene scene = new Scene(root, 350, 250);
+            // Eliminar o comentar la línea del color de fondo plano
+            // root.setStyle("-fx-background-color: #080808ff;");
+
+            // Usar StackPane para poner la imagen de fondo detrás del VBox
+            StackPane stack = new StackPane();
+            stack.getChildren().addAll(fondoView, root);
+
+            Scene scene = new Scene(stack, 350, 250);
             stage.setScene(scene);
             stage.setTitle("Selecciona personaje");
             stage.show();
@@ -249,9 +282,24 @@ public class ClientGameApp extends GameApplication {
                           " - Si caes del mapa, es Game Over.\n" + 
                           " - Elimina a Eggman para ganar el juego.";
 
-        getDialogService().showMessageBox(helpText, () -> {
-            // Callback cuando el diálogo se cierra. El menú principal permanece abierto.
-        });
+        Stage dialog = new Stage();
+        VBox root = new VBox();
+        root.setAlignment(Pos.CENTER);
+        root.setSpacing(20);
+        root.setStyle("-fx-background-color: #001f3f; -fx-padding: 30px;");
+        Text text = new Text(helpText);
+        text.setFill(Color.WHITE);
+        text.setFont(javafx.scene.text.Font.font("Impact", 16));
+        text.setStyle("-fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
+        text.setWrappingWidth(500);
+        Button btnCerrar = new Button("Cerrar");
+        btnCerrar.setStyle("-fx-font-family: 'Impact'; -fx-font-size: 18px; -fx-background-color: #003366; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+        btnCerrar.setOnAction(e -> dialog.close());
+        root.getChildren().addAll(text, btnCerrar);
+        Scene scene = new Scene(root, 550, 500);
+        dialog.setScene(scene);
+        dialog.setTitle("Ayuda");
+        dialog.show();
     }
 
     /**
@@ -268,9 +316,24 @@ public class ClientGameApp extends GameApplication {
                            "- Millan, Villalba, Acosta, Rodriguez \n" +
                            "Versión Actual: 1.0.1";
 
-        getDialogService().showMessageBox(aboutText, () -> {
-            // Callback cuando el diálogo se cierra. El menú principal permanece abierto.
-        });
+        Stage dialog = new Stage();
+        VBox root = new VBox();
+        root.setAlignment(Pos.CENTER);
+        root.setSpacing(20);
+        root.setStyle("-fx-background-color: #001f3f; -fx-padding: 30px;");
+        Text text = new Text(aboutText);
+        text.setFill(Color.WHITE);
+        text.setFont(javafx.scene.text.Font.font("Impact", 18));
+        text.setStyle("-fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
+        text.setWrappingWidth(500);
+        Button btnCerrar = new Button("Cerrar");
+        btnCerrar.setStyle("-fx-font-family: 'Impact'; -fx-font-size: 18px; -fx-background-color: #003366; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+        btnCerrar.setOnAction(e -> dialog.close());
+        root.getChildren().addAll(text, btnCerrar);
+        Scene scene = new Scene(root, 550, 400);
+        dialog.setScene(scene);
+        dialog.setTitle("Acerca de");
+        dialog.show();
     }
 
     /**
@@ -290,9 +353,24 @@ public class ClientGameApp extends GameApplication {
                 sb.append(String.format("%d. %s: %d\n", i + 1, entry.getPlayerName(), entry.getScore()));
             }
         }
-        getDialogService().showMessageBox(sb.toString(), () -> {
-            // Callback cuando el diálogo se cierra. El menú principal permanece abierto.
-        });
+        Stage dialog = new Stage();
+        VBox root = new VBox();
+        root.setAlignment(Pos.CENTER);
+        root.setSpacing(20);
+        root.setStyle("-fx-background-color: #001f3f; -fx-padding: 30px;");
+        Text text = new Text(sb.toString());
+        text.setFill(Color.WHITE);
+        text.setFont(javafx.scene.text.Font.font("Impact", 18));
+        text.setStyle("-fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
+        text.setWrappingWidth(500);
+        Button btnCerrar = new Button("Cerrar");
+        btnCerrar.setStyle("-fx-font-family: 'Impact'; -fx-font-size: 18px; -fx-background-color: #003366; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px;");
+        btnCerrar.setOnAction(e -> dialog.close());
+        root.getChildren().addAll(text, btnCerrar);
+        Scene scene = new Scene(root, 550, 400);
+        dialog.setScene(scene);
+        dialog.setTitle("Puntuaciones");
+        dialog.show();
     }
 
     private void startNetworkAndGame() {
