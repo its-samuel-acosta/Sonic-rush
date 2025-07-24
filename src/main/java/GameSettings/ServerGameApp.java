@@ -1,21 +1,29 @@
 package GameSettings;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.serialization.Bundle;
+import static com.almasb.fxgl.dsl.FXGL.getExecutor;
+import static com.almasb.fxgl.dsl.FXGL.getGameWorld;
+import static com.almasb.fxgl.dsl.FXGL.getNetService;
+import static com.almasb.fxgl.dsl.FXGL.setLevelFromMap;
+import static com.almasb.fxgl.dsl.FXGL.spawn;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.multiplayer.MultiplayerService;
 import com.almasb.fxgl.net.Connection;
-import component.Enemigos.EggmanComponent;
-import component.GameFactory;
-
-import java.io.Serializable;
-import java.util.*;
 
 import static GameSettings.Entities.posicionesBasura;
 import static GameSettings.Entities.posicionesRings;
 import static GameSettings.Entities.posicionesRobots;
-import static com.almasb.fxgl.dsl.FXGL.*;
+import component.Enemigos.EggmanComponent;
+import component.GameFactory;
 
 public class ServerGameApp extends GameApplication implements Serializable {
     private static final int SERVER_PORT = 55555;
@@ -35,7 +43,7 @@ public class ServerGameApp extends GameApplication implements Serializable {
     protected void initSettings(GameSettings gameSettings) {
         gameSettings.setWidth(800);
         gameSettings.setHeight(500);
-        gameSettings.setTitle("Server");
+        gameSettings.setTitle("Servidor"); 
         gameSettings.addEngineService(MultiplayerService.class);
     }
 

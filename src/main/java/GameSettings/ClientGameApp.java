@@ -1,9 +1,27 @@
 package GameSettings;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.core.serialization.Bundle;
+import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
+import static com.almasb.fxgl.dsl.FXGL.getAudioPlayer;
+import static com.almasb.fxgl.dsl.FXGL.getDialogService;
+import static com.almasb.fxgl.dsl.FXGL.getGameScene;
+import static com.almasb.fxgl.dsl.FXGL.getGameTimer;
+import static com.almasb.fxgl.dsl.FXGL.getGameWorld;
+import static com.almasb.fxgl.dsl.FXGL.getInput;
+import static com.almasb.fxgl.dsl.FXGL.getNetService;
+import static com.almasb.fxgl.dsl.FXGL.onCollisionBegin;
+import static com.almasb.fxgl.dsl.FXGL.play;
+import static com.almasb.fxgl.dsl.FXGL.setLevelFromMap;
+import static com.almasb.fxgl.dsl.FXGL.spawn;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.input.virtual.VirtualButton;
@@ -11,6 +29,7 @@ import com.almasb.fxgl.multiplayer.MultiplayerService;
 import com.almasb.fxgl.net.Connection;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.time.TimerAction;
+
 import component.GameFactory;
 import component.GameLogic;
 import component.Personajes.KnucklesComponent;
@@ -21,23 +40,15 @@ import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.almasb.fxgl.dsl.FXGL.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
 
 public class ClientGameApp extends GameApplication {
 
@@ -70,7 +81,7 @@ public class ClientGameApp extends GameApplication {
     protected void initSettings(GameSettings gameSettings) {
         gameSettings.setWidth(anchoPantalla);
         gameSettings.setHeight(altoPantalla);
-        gameSettings.setTitle("Jugador Sonic");
+        gameSettings.setTitle("Sonic Cliente");
         gameSettings.addEngineService(MultiplayerService.class);
     }
 
@@ -116,25 +127,26 @@ public class ClientGameApp extends GameApplication {
         String baseButtonStyle = "-fx-font-family: 'Impact'; -fx-font-size: 22px; -fx-padding: 10px 20px; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);";
 
         String playButtonStyle = baseButtonStyle + "-fx-background-color: #0000FF;"; // Azul
-        String playButtonHoverStyle = "-fx-background-color: #0000CC;";
-        btnPlay.setTextFill(Color.WHITE);
+        //String playButtonHoverStyle = "-fx-background-color: #0000CC;";
+        //btnPlay.setTextFill(Color.WHITE);
 
         String helpButtonStyle = baseButtonStyle + "-fx-background-color: #f75f07ff;"; // Naranja
-        String helpButtonHoverStyle = "-fx-background-color: #f75f07ff;";
-        btnHelp.setTextFill(Color.BLACK);
+        //String helpButtonHoverStyle = "-fx-background-color: #f75f07ff;";
+        //btnHelp.setTextFill(Color.BLACK);
 
         String aboutButtonStyle = baseButtonStyle + "-fx-background-color: #FF0000;"; // Rojo
-        String aboutButtonHoverStyle = "-fx-background-color: #CC0000;";
+        //String aboutButtonHoverStyle = "-fx-background-color: #CC0000;";
 
         String scoresButtonStyle = baseButtonStyle + "-fx-background-color: #800080;"; // Púrpura
-        String scoresButtonHoverStyle = "-fx-background-color: #6A0DAD;";
-        btnScores.setTextFill(Color.WHITE);
+        //String scoresButtonHoverStyle = "-fx-background-color: #6A0DAD;";
+        //btnScores.setTextFill(Color.WHITE);
 
         btnPlay.setStyle(playButtonStyle);
         btnHelp.setStyle(helpButtonStyle);
         btnAbout.setStyle(aboutButtonStyle);
         btnScores.setStyle(scoresButtonStyle);
 
+        /* Efectos Hover eliminados
         btnPlay.setOnMouseEntered(e -> btnPlay.setStyle(playButtonHoverStyle));
         btnPlay.setOnMouseExited(e -> btnPlay.setStyle(playButtonStyle));
 
@@ -146,6 +158,7 @@ public class ClientGameApp extends GameApplication {
 
         btnScores.setOnMouseEntered(e -> btnScores.setStyle(scoresButtonHoverStyle));
         btnScores.setOnMouseExited(e -> btnScores.setStyle(scoresButtonStyle));
+        */
 
         btnPlay.setOnAction(e -> {
             stage.close();
@@ -202,23 +215,24 @@ public class ClientGameApp extends GameApplication {
             Button btnTails = new Button("Tails");
             Button btnKnuckles = new Button("Knuckles");
 
-            String baseCharButtonStyle = "-fx-font-family: 'Impact'; -fx-font-size: 20px; -fx-padding: 10px 20px; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);";
+            String baseCharButtonStyle = "-fx-font-family: 'Impact'; -fx-font-size: 20px; -fx-padding: 10px 20px; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px;";
 
             String sonicButtonStyle = baseCharButtonStyle + "-fx-background-color: #0000FF;";
-            String sonicButtonHoverStyle = "-fx-background-color: #0000CC;";
-            btnSonic.setTextFill(Color.WHITE);
+           //String sonicButtonHoverStyle = "-fx-background-color: #0000CC;";
+           //btnSonic.setTextFill(Color.WHITE);
 
             String tailsButtonStyle = baseCharButtonStyle + "-fx-background-color: #f75f07ff;";
-            String tailsButtonHoverStyle = "-fx-background-color: #f75f07ff;";
-            btnTails.setTextFill(Color.BLACK);
+           // String tailsButtonHoverStyle = "-fx-background-color: #f75f07ff;";
+           // btnTails.setTextFill(Color.BLACK);
 
             String knucklesButtonStyle = baseCharButtonStyle + "-fx-background-color: #FF0000;";
-            String knucklesButtonHoverStyle = "-fx-background-color: #CC0000;";
+            //String knucklesButtonHoverStyle = "-fx-background-color: #CC0000;";
 
             btnSonic.setStyle(sonicButtonStyle);
             btnTails.setStyle(tailsButtonStyle);
             btnKnuckles.setStyle(knucklesButtonStyle);
-
+            
+            /* Efecto Hover eliminado
             btnSonic.setOnMouseEntered(e -> btnSonic.setStyle(sonicButtonHoverStyle));
             btnSonic.setOnMouseExited(e -> btnSonic.setStyle(sonicButtonStyle));
             
@@ -227,7 +241,7 @@ public class ClientGameApp extends GameApplication {
             
             btnKnuckles.setOnMouseEntered(e -> btnKnuckles.setStyle(knucklesButtonHoverStyle));
             btnKnuckles.setOnMouseExited(e -> btnKnuckles.setStyle(knucklesButtonStyle));
-
+            */
             btnSonic.setOnAction(e -> {
                 personajePendiente = "sonic";
                 stage.close();
