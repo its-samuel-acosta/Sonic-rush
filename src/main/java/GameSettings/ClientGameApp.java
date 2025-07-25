@@ -562,6 +562,7 @@ public class ClientGameApp extends GameApplication {
                     String id = bundle.get("id");
                     Entity ring = spawn("ring", x, y);
                     ring.getProperties().setValue("id", id);
+                    break;
                 }
 
                 case "crearbasura": {
