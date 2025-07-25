@@ -31,33 +31,33 @@ public class GameLogic extends Component implements Serializable {
 
     public GameLogic() {
         textoCaucho = new Text("Caucho: 0");
-        textoCaucho.setStyle("-fx-font-size: 24px; -fx-fill: red;");
-        textoCaucho.setFont(Font.font("Impact", 24));
+        textoCaucho.setStyle("-fx-font-size: 28px; -fx-fill: red; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
+        textoCaucho.setFont(Font.font("Impact", 28));
         addUINode(textoCaucho, 20, 110);
 
         textoAnillos = new Text("Anillos: 0");
-        textoAnillos.setStyle("-fx-font-size: 24px; -fx-fill: yellow;");
-        textoAnillos.setFont(Font.font("Impact", 24));
+        textoAnillos.setStyle("-fx-font-size: 28px; -fx-fill: yellow; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
+        textoAnillos.setFont(Font.font("Impact", 28));
         addUINode(textoAnillos, 20, 20);
 
         textoVidas = new Text("Vidas: 3");
-        textoVidas.setStyle("-fx-font-size: 24px; -fx-fill: green;");
-        textoVidas.setFont(Font.font("Impact", 24));
+        textoVidas.setStyle("-fx-font-size: 28px; -fx-fill: green; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
+        textoVidas.setFont(Font.font("Impact", 28));
         addUINode(textoVidas, 700, 50);
 
         textoBasura = new Text("Basura: 0");
-        textoBasura.setStyle("-fx-font-size: 24px; -fx-fill: blue;");
-        textoBasura.setFont(Font.font("Impact", 24));
+        textoBasura.setStyle("-fx-font-size: 28px; -fx-fill: blue; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
+        textoBasura.setFont(Font.font("Impact", 28));
         addUINode(textoBasura, 20, 50);
 
         textoPapel = new Text("Papel: 0");
-        textoPapel.setStyle("-fx-font-size: 24px; -fx-fill: white;");
-        textoPapel.setFont(Font.font("Impact", 24));
+        textoPapel.setStyle("-fx-font-size: 28px; -fx-fill: white; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
+        textoPapel.setFont(Font.font("Impact", 28));
         addUINode(textoPapel, 20, 80);
 
         textoTiempo = new Text("Tiempo: 180");
-        textoTiempo.setStyle("-fx-font-size: 24px; -fx-fill: orange;");
-        textoTiempo.setFont(Font.font("Impact", 24));
+        textoTiempo.setStyle("-fx-font-size: 28px; -fx-fill: orange; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
+        textoTiempo.setFont(Font.font("Impact", 28));
         addUINode(textoTiempo, 700, 80);
 
         this.currentProgressBar = null;
@@ -142,7 +142,7 @@ public class GameLogic extends Component implements Serializable {
 
     public static void agregarTexto(String mensaje, String color, int size, int x, int y) {
         Text texto = new Text(mensaje);
-        texto.setStyle("-fx-font-size: " + size + "px; -fx-fill: " + color + ";");
+        texto.setStyle("-fx-font-size: " + size + "px; -fx-fill: " + color + "; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
         texto.setFont(Font.font("Impact", size));
         addUINode(texto, x, y);
     }

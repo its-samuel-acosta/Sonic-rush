@@ -12,7 +12,7 @@ public class SonicComponent extends PlayerComponent {
     public static final AnimationChannel NORMAL_IDLE = new AnimationChannel(image("Personajes/sonic.png"), 21, 32, 42, Duration.seconds(4.5), 0, 20);
     public static final AnimationChannel NORMAL_CAMINA = new AnimationChannel(image("Personajes/sonic_camina.png"), 6, 44, 42, Duration.seconds(0.66), 0, 5);
     public static final AnimationChannel NORMAL_SALTO = new AnimationChannel(image("Personajes/sonic_camina.png"), 7, 44, 42, Duration.seconds(0.66), 6, 6);
-    public static final AnimationChannel SUPER_IDLE = new AnimationChannel(image("Personajes/super_idle.png"), 21, 32, 42, Duration.seconds(4.5), 0, 20);
+    public static final AnimationChannel SUPER_IDLE = new AnimationChannel(image("Personajes/super_idle.png"), 6, 44, 41, Duration.seconds(12.0), 0, 5);
     public static final AnimationChannel SUPER_CAMINA = new AnimationChannel(image("Personajes/super_sonic.png"), 8, 44, 60, Duration.seconds(0.66), 0, 7);
     public static final AnimationChannel SUPER_VUELO = new AnimationChannel(image("Personajes/super_sonic.png"), 8, 44, 60, Duration.seconds(0.66), 7, 7);
 
@@ -78,8 +78,8 @@ public class SonicComponent extends PlayerComponent {
         caminando = SUPER_CAMINA;
         saltando = SUPER_VUELO;
         
-        // Ajustar el punto de anclaje para el sprite más alto
-        entity.getTransformComponent().setScaleOrigin(new javafx.geometry.Point2D(16, 30)); // Ajusta según el centro del sprite de 60px
+        // Ajustar el punto de anclaje para el sprite idle
+        entity.getTransformComponent().setScaleOrigin(new javafx.geometry.Point2D(22, 20)); // Centro de 44x41
 
         // Aplicar la nueva animación de inmediato
         texture.loopAnimationChannel(parado);
