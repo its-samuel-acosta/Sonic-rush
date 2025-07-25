@@ -30,34 +30,36 @@ public class GameLogic extends Component implements Serializable {
     private double blinkTimerAccumulator = 0.0; // Acumulador para el parpadeo
 
     public GameLogic() {
+        Font miFuente = getAssetLoader().loadFont("PublicPixel.ttf").newFont(24);
+
         textoCaucho = new Text("Caucho: 0");
-        textoCaucho.setStyle("-fx-font-size: 28px; -fx-fill: red; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
-        textoCaucho.setFont(Font.font("Impact", 28));
+        textoCaucho.setStyle("-fx-font-size: 24px; -fx-fill: red;");
+        textoCaucho.setFont(miFuente);
         addUINode(textoCaucho, 20, 110);
 
         textoAnillos = new Text("Anillos: 0");
-        textoAnillos.setStyle("-fx-font-size: 28px; -fx-fill: yellow; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
-        textoAnillos.setFont(Font.font("Impact", 28));
+        textoAnillos.setStyle("-fx-font-size: 24px; -fx-fill: yellow;");
+        textoAnillos.setFont(miFuente);
         addUINode(textoAnillos, 20, 20);
 
         textoVidas = new Text("Vidas: 3");
-        textoVidas.setStyle("-fx-font-size: 28px; -fx-fill: green; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
-        textoVidas.setFont(Font.font("Impact", 28));
+        textoVidas.setStyle("-fx-font-size: 24px; -fx-fill: green;");
+        textoVidas.setFont(miFuente);
         addUINode(textoVidas, 700, 50);
 
         textoBasura = new Text("Basura: 0");
-        textoBasura.setStyle("-fx-font-size: 28px; -fx-fill: blue; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
-        textoBasura.setFont(Font.font("Impact", 28));
+        textoBasura.setStyle("-fx-font-size: 24px; -fx-fill: blue;");
+        textoBasura.setFont(miFuente);
         addUINode(textoBasura, 20, 50);
 
         textoPapel = new Text("Papel: 0");
-        textoPapel.setStyle("-fx-font-size: 28px; -fx-fill: white; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
-        textoPapel.setFont(Font.font("Impact", 28));
+        textoPapel.setStyle("-fx-font-size: 24px; -fx-fill: white;");
+        textoPapel.setFont(miFuente);
         addUINode(textoPapel, 20, 80);
 
         textoTiempo = new Text("Tiempo: 180");
-        textoTiempo.setStyle("-fx-font-size: 28px; -fx-fill: orange; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
-        textoTiempo.setFont(Font.font("Impact", 28));
+        textoTiempo.setStyle("-fx-font-size: 24px; -fx-fill: orange;");
+        textoTiempo.setFont(miFuente);
         addUINode(textoTiempo, 700, 80);
 
         this.currentProgressBar = null;
