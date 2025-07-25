@@ -318,7 +318,7 @@ public class ServerGameApp extends GameApplication implements Serializable {
      */
     private void verificarEventoBasura() {
         int cantidadRestante = basuras.size(); 
-        if (cantidadRestante <= 1 && !eventosDisparados.contains(6)) {
+        if (cantidadRestante <= 0 && !eventosDisparados.contains(6)) {
             eventosDisparados.add(6);
             String eggmanId = UUID.randomUUID().toString();
             Entity eggman = spawn("eggman", 2000, 250);

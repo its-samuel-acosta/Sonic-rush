@@ -821,14 +821,6 @@ public class ClientGameApp extends GameApplication {
             }
         }, KeyCode.E);
 
-        getInput().addAction(new UserAction("Desactivar filtro") {
-            @Override
-            protected void onActionBegin() {
-                if (gameLogic != null) {
-                    gameLogic.filtroColor(0);
-                }
-            }
-        }, KeyCode.L);
     }
 
    @Override

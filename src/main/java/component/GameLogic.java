@@ -106,40 +106,6 @@ public class GameLogic extends Component implements Serializable {
         System.out.println(titulo);
     }
 
-    //Agrega una barra de progreso
-    //Descartado
-    public void agregarBarra(float num) {
-        if (currentProgressBar != null) {
-            getGameScene().getRoot().getChildren().remove(currentProgressBar);
-        }
-
-        ProgressBar progressBar = new ProgressBar();
-        progressBar.setProgress(num);
-        if (num > 0.75) {
-            progressBar.setStyle("-fx-accent: red; -fx-background-color: transparent;");
-        } else if (num > 0.5) {
-            progressBar.setStyle("-fx-accent: orange; -fx-background-color: transparent;");
-        } else {
-            progressBar.setStyle("-fx-accent: green; -fx-background-color: transparent;");
-        }
-        progressBar.setPrefWidth(200);
-        progressBar.setPrefHeight(10);
-        progressBar.setLayoutX(20);
-        progressBar.setLayoutY(30);
-        getGameScene().getRoot().getChildren().add(progressBar);
-        this.currentProgressBar = progressBar;
-    }
-
-    //Aplica efectos de color en la pantalla
-    //Descartado
-    public void filtroColor(float num) {
-        if (currentColorAdjust == null) {
-            currentColorAdjust = new ColorAdjust();
-            getGameScene().getRoot().setEffect(currentColorAdjust);
-        }
-        currentColorAdjust.setHue(num * 0.15);
-    }
-
     public static void agregarTexto(String mensaje, String color, int size, int x, int y) {
         Text texto = new Text(mensaje);
         texto.setStyle("-fx-font-size: " + size + "px; -fx-fill: " + color + "; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
