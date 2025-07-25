@@ -270,9 +270,7 @@ public class ServerGameApp extends GameApplication implements Serializable {
             String tipoJugador = bundle.get("tipo");
             String tipoBasura = trash.getProperties().getString("tipo");
 
-            boolean puedeRecoger = tipoBasura.equals("basura") ||
-                                   (tipoBasura.equals("caucho") && tipoJugador.equals("knuckles")) ||
-                                   (tipoBasura.equals("papel") && tipoJugador.equals("tails"));
+            boolean puedeRecoger = true; // Ahora todos los personajes pueden recoger cualquier basura
             if (puedeRecoger) {
                 basuras.remove(trashId).removeFromWorld(); 
                 

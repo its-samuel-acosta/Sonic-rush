@@ -78,6 +78,9 @@ public class SonicComponent extends PlayerComponent {
         caminando = SUPER_CAMINA;
         saltando = SUPER_VUELO;
         
+        // Ajustar el punto de anclaje para el sprite más alto
+        entity.getTransformComponent().setScaleOrigin(new javafx.geometry.Point2D(16, 30)); // Ajusta según el centro del sprite de 60px
+
         // Aplicar la nueva animación de inmediato
         texture.loopAnimationChannel(parado);
         return true;
@@ -94,6 +97,9 @@ public class SonicComponent extends PlayerComponent {
         caminando = NORMAL_CAMINA;
         saltando = NORMAL_SALTO;
         
+        // Restaurar el punto de anclaje original
+        entity.getTransformComponent().setScaleOrigin(new javafx.geometry.Point2D(16, 21)); // Centro original del sprite normal
+
         // Aplicar la animación normal de inmediato
         texture.loopAnimationChannel(parado);
     }

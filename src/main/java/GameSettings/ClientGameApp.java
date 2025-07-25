@@ -864,15 +864,11 @@ public class ClientGameApp extends GameApplication {
         });
 
         onCollisionBegin(GameFactory.EntityType.PLAYER, GameFactory.EntityType.PAPEL, (jugador, papel) -> {
-            if (player.hasComponent(TailsComponent.class)|| player.hasComponent(SonicComponent.class)) {
-                recogerBasura((Player)jugador, papel);
-            }
+            recogerBasura((Player)jugador, papel);
         });
 
         onCollisionBegin(GameFactory.EntityType.PLAYER, GameFactory.EntityType.CAUCHO, (jugador, caucho) -> {
-            if (jugador.hasComponent(KnucklesComponent.class)|| player.hasComponent(SonicComponent.class)) {
-               recogerBasura((Player)jugador, caucho);
-            }
+            recogerBasura((Player)jugador, caucho);
         });
 
        onCollisionBegin(GameFactory.EntityType.PLAYER, GameFactory.EntityType.ROBOT_ENEMIGO, (entidad, robot) -> {
@@ -920,7 +916,7 @@ public class ClientGameApp extends GameApplication {
 
         String tipo = entidad.getTipo();
 
-        Bundle recoger = new Bundle("RecogerBasura");
+        Bundle recoger = new Bundle("RecogerPlastico");
         recoger.put("trashId", trashId);
         recoger.put("playerId", player.getId());
         recoger.put("tipo", tipo);
@@ -981,7 +977,8 @@ public class ClientGameApp extends GameApplication {
             btnContinuar.setOnMouseExited(e -> btnContinuar.setStyle(buttonStyle));
             btnContinuar.setOnAction(e -> {
                 dialog.close();
-                promptForNameAndSaveScore(0);
+                int finalScore = contadorAnillos + contadorBasura + contadorPapel + contadorCaucho;
+                promptForNameAndSaveScore(finalScore);
             });
 
             root.getChildren().addAll(title, btnContinuar);
