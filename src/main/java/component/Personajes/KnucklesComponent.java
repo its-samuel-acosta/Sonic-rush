@@ -19,6 +19,7 @@ public class KnucklesComponent extends PlayerComponent {
         velocidad_lateral_base = 400; 
         velocidad_vertical_base = 350; 
         
+        //Canales de animación de Knuckles, se ajustan para que coincidan con sus sprites.
         parado = new AnimationChannel(idle, 11, 34, 44, Duration.seconds(1), 0, 0); 
         caminando = new AnimationChannel(idle, 11, 36, 44, Duration.seconds(0.8), 1, 5); 
         saltando = new AnimationChannel(idle, 11, 37, 44, Duration.seconds(1), 7, 7); 
@@ -54,7 +55,7 @@ public class KnucklesComponent extends PlayerComponent {
 
     @Override
     public void interactuar() {
-        // Solo puede golpear si no está saltando o ya golpeando
+        // Solo puede golpear si no está saltando o golpeando
         if (texture.getAnimationChannel() != saltando && texture.getAnimationChannel() != golpeando) {
             texture.playAnimationChannel(golpeando);
             texture.setOnCycleFinished(() -> texture.loopAnimationChannel(parado));

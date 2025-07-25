@@ -17,6 +17,7 @@ public class TailsComponent extends PlayerComponent {
         velocidad_lateral_base = 425; 
         velocidad_vertical_base = 400; 
         
+        //Canales de animación de Tails, se ajustan para que coincidan con sus sprites.
         parado = new AnimationChannel(idle, 22, 41, 42, Duration.seconds(4), 0, 21); 
         caminando = new AnimationChannel(camina_anim, 8, 49, 44, Duration.seconds(0.8), 0, 7); 
         saltando = new AnimationChannel(salta_anim, 2, 41, 44, Duration.seconds(0.66), 0, 1); 
