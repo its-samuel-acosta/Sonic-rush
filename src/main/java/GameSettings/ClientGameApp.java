@@ -970,9 +970,43 @@ public class ClientGameApp extends GameApplication {
             gameTimerAction.expire();
             gameTimerAction = null; 
         }
-        getDialogService().showMessageBox("¡Ganaste el Juego, Felicidades!", () -> {
-            int finalScore = contadorAnillos + contadorBasura + contadorPapel + contadorCaucho;
-            promptForNameAndSaveScore(finalScore);
+        Platform.runLater(() -> {
+            Stage dialog = new Stage();
+            // Fondo visual igual que el menú principal
+            Image fondoImg = new Image(getClass().getResourceAsStream("/assets/textures/background/fondo_menu.png"));
+            ImageView fondoView = new ImageView(fondoImg);
+            fondoView.setFitWidth(400);
+            fondoView.setFitHeight(250);
+
+            VBox root = new VBox(20);
+            root.setAlignment(Pos.CENTER);
+            Text title = new Text("¡VICTORIA!");
+            title.setFont(javafx.scene.text.Font.font("Impact", 40));
+            title.setFill(Color.GOLD);
+            title.setStyle("-fx-effect: dropshadow(gaussian, black, 4, 0.7, 2, 2);");
+
+            Text subtitle = new Text("¡Has completado el nivel!");
+            subtitle.setFont(javafx.scene.text.Font.font("Impact", 22));
+            subtitle.setFill(Color.WHITE);
+            subtitle.setStyle("-fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);");
+
+            Button btnContinuar = new Button("Registrar puntuación");
+            String buttonStyle = "-fx-font-family: 'Impact'; -fx-font-size: 22px; -fx-padding: 10px 20px; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-background-color: #00C853; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);";
+            btnContinuar.setStyle(buttonStyle);
+            btnContinuar.setOnMouseExited(e -> btnContinuar.setStyle(buttonStyle));
+            btnContinuar.setOnAction(e -> {
+                dialog.close();
+                int finalScore = contadorAnillos + contadorBasura + contadorPapel + contadorCaucho;
+                promptForNameAndSaveScore(finalScore);
+            });
+
+            root.getChildren().addAll(title, subtitle, btnContinuar);
+            StackPane stack = new StackPane();
+            stack.getChildren().addAll(fondoView, root);
+            Scene scene = new Scene(stack, 400, 250);
+            dialog.setScene(scene);
+            dialog.setTitle("¡Victoria!");
+            dialog.show();
         });
     }
 
