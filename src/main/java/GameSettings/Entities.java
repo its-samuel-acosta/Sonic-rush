@@ -17,7 +17,7 @@ public class Entities {
         new int[]{2400, 300},
         new int[]{2420, 300},
         new int[]{2460, 300}
-        // mas anillos 
+        // Posiciones de los anillos en el mapa
     );
 
     static List<int[]> posicionesBasura = List.of(
@@ -42,7 +42,7 @@ public class Entities {
             new int[]{3320, 240},
             new int[]{3340, 240},
             new int[]{2060, 500}
-    );
+    );      // Posiciones de la Basura en el mapa
 
     static List<int[]> posicionesRobots = List.of(
         new int[]{600 , 600},
@@ -55,7 +55,7 @@ public class Entities {
         new int[]{1500, 500},
         new int[]{1600, 100},
         new int[]{3400, 100}
-        // mas robots
+        // Posiciones de los enemigos en el mapa
     );
 
 }

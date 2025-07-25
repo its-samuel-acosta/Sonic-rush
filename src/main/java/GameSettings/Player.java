@@ -5,10 +5,9 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.net.Connection;
 import component.Personajes.PlayerComponent;
 
-/**
- * La clase Player maneja el estado (vidas, ID) y delega acciones al PlayerComponent.
- * Esta estructura centraliza la lógica de estado y evita duplicación.
- */
+
+// Clase Player que extiende de Entity, maneja el estado y delega acciones al PlayerComponent
+// Centralizando logica del estado
 public class Player extends Entity {
 
     private int vidas = 3;
@@ -17,15 +16,13 @@ public class Player extends Entity {
     private boolean invencible = false;
     private PlayerComponent playerComponent; // Referencia al PlayerComponent
 
-    // Constructor vacío, para ser usado cuando la entidad Player es creada por FXGL
+    // Constructor vacío, para ser usado cuando la entidad Player es creada por el FXGL
     public Player() {
-        // El playerComponent se establecerá externamente después de que la entidad sea spawnada
+        // El playerComponent se establecera externamente despues de que la entidad sea spawneada
     }
 
-    /**
-     * Realiza una acción en el PlayerComponent si está presente.
-     * @param action La acción (método) a ejecutar en el PlayerComponent.
-     */
+
+    // Realiza una accion en el PlayerComponent si esta presente
     private void performAction(java.util.function.Consumer<PlayerComponent> action) {
         if (playerComponent != null) {
             action.accept(playerComponent);
@@ -35,6 +32,7 @@ public class Player extends Entity {
         }
     }
 
+    
     public void moverIzquierda() { performAction(PlayerComponent::moverIzquierda); }
     public void moverDerecha() { performAction(PlayerComponent::moverDerecha); }
     public void saltar() { performAction(PlayerComponent::saltar); }

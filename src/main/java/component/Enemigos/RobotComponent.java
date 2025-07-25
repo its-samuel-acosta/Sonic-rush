@@ -4,9 +4,8 @@ import static com.almasb.fxgl.dsl.FXGL.image;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-/**
- * Componente para el enemigo Robot. Hereda la lógica de patrullaje de EnemyComponent.
- */
+
+//Clase para el robot enemigo, hereda losica de EnemyComponent
 public class RobotComponent extends EnemyComponent {
 
     // Define las características específicas del robot
@@ -18,6 +17,7 @@ public class RobotComponent extends EnemyComponent {
         super(VELOCIDAD, DISTANCIA_PATRULLAJE, VIDAS);
     }
 
+    //Configura la apariencia del robot enemigo en el juego
     @Override
     public void onAdded() {
         super.onAdded(); // Llama a la lógica base de EnemyComponent

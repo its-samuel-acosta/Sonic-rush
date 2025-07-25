@@ -4,10 +4,8 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.Required;
 import com.almasb.fxgl.physics.PhysicsComponent;
 
-/**
- * Clase base abstracta para componentes de enemigos que patrullan.
- * Contiene la lógica compartida de movimiento y vida para evitar duplicación de código.
- */
+
+//Clase EnemyComponent que define el comportamiento de los enemigos
 @Required(PhysicsComponent.class)
 public abstract class EnemyComponent extends Component {
 
@@ -42,7 +40,7 @@ public abstract class EnemyComponent extends Component {
         // Patrullaje
         physics.setVelocityX(speed * direction);
 
-        // Lógica de patrullaje mejorada para evitar el "drifting".
+        //Evita que se quede trabado girando al colisionar
         if (Math.abs(entity.getX() - startX) >= patrolDistance && cooldownFrames == 0) {
             direction *= -1; // Invierte la dirección
             entity.setScaleX(entity.getScaleX() * -1);

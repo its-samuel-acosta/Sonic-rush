@@ -8,11 +8,12 @@ import javafx.scene.image.ImageView;
 
 public class CauchoComponent extends Component {
 
+    //Configura la apariencia del caucho en el juego
     @Override
     public void onAdded() {
         Image image = image("Items/caucho.png");
         ImageView view = new ImageView(image);
-        view.setFitWidth(32);   // Aumentado para mejor visibilidad
+        view.setFitWidth(32);  
         view.setFitHeight(32);
         entity.getViewComponent().addChild(view);
     }

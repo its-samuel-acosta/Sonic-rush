@@ -8,6 +8,7 @@ import javafx.scene.image.ImageView;
 
 public class PapelComponent extends Component {
 
+    //Configura la apariencia del papel en el juego
     @Override
     public void onAdded() {
         Image image = image("Items/papel.png");

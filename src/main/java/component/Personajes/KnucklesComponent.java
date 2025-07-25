@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 import javafx.util.Duration;
 import static com.almasb.fxgl.dsl.FXGL.image;
 
+// Clase que representa a Knucles
 public class KnucklesComponent extends PlayerComponent {
 
     private AnimationChannel golpeando;
