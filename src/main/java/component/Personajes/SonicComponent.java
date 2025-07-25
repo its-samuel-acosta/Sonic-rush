@@ -62,10 +62,7 @@ public class SonicComponent extends PlayerComponent {
         }
     }
 
-    /**
-     * Activa la transformación a Super Sonic.
-     * @return true si la transformación ocurrió, false si no.
-     */
+     //Activa la transformación a Super Sonic.
     public boolean transform() {
         if (!canTransform) {
             return false;
@@ -78,7 +75,7 @@ public class SonicComponent extends PlayerComponent {
         caminando = SUPER_CAMINA;
         saltando = SUPER_VUELO;
         
-        // Ajustar el punto de anclaje para el sprite idle
+        // Ajustar el punto de anclaje para el sprite parado
         entity.getTransformComponent().setScaleOrigin(new javafx.geometry.Point2D(22, 20)); // Centro de 44x41
 
         // Aplicar la nueva animación de inmediato
@@ -86,9 +83,7 @@ public class SonicComponent extends PlayerComponent {
         return true;
     }
 
-    /**
-     * Revierte a Sonic a su estado normal.
-     */
+     //Revierte a Sonic a su estado normal.
     public void revert() {
         isSuper = false;
 
@@ -104,9 +99,8 @@ public class SonicComponent extends PlayerComponent {
         texture.loopAnimationChannel(parado);
     }
 
-    // El método interactuar ahora está vacío porque la lógica se dispara desde ClientGameApp
+    // El método interactuar está vacío porque la lógica se dispara desde ClientGameApp
     @Override
     public void interactuar() {
-        // La lógica de transformación se inicia en ClientGameApp para acceder a GameLogic y Timers.
     }
 }

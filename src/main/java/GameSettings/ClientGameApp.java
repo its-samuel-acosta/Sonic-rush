@@ -62,9 +62,9 @@ public class ClientGameApp extends GameApplication {
     private long clientUpdateCount = 0;
 
     private boolean pendingReset = false;
-    private boolean isPlayerReady = false; // Nueva bandera para controlar la disponibilidad del jugador
+    private boolean isPlayerReady = false; // Bandera para controlar la disponibilidad del jugador
     private final Map<String, Point2D> remoteTargetPositions = new HashMap<>();
-    private String serverIP = null; // Nueva variable para la IP del servidor
+    private String serverIP = null; // Variable para la IP del servidor
     private boolean gameOverShown = false;
 
     @Override
@@ -89,9 +89,7 @@ public class ClientGameApp extends GameApplication {
         });
     }
 
-    /**
-     * Muestra el menú principal del juego con opciones para Jugar, Ayuda, Acerca De y Puntuaciones.
-     */
+    //Muestra el menú principal al iniciar el juego.
     private void showMainMenu() {
         Stage stage = new Stage();
 
@@ -113,7 +111,7 @@ public class ClientGameApp extends GameApplication {
         Button btnAbout = new Button("Acerca De");
         Button btnScores = new Button("Puntuaciones");
 
-        // Estilos para los botones
+        // Estilos (colores) para los botones
         String baseButtonStyle = "-fx-font-family: 'Impact'; -fx-font-size: 22px; -fx-padding: 10px 20px; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);";
 
         String playButtonStyle = baseButtonStyle + "-fx-background-color: #0000FF;"; // Azul
@@ -143,7 +141,7 @@ public class ClientGameApp extends GameApplication {
 
         btnPlay.setOnAction(e -> {
             stage.close();
-            showServerIPDialog(); // Pedir IP antes de selección de personaje
+            showServerIPDialog(); // Se pide la IP antes de seleccionar el personaje
         });
 
         btnHelp.setOnAction(e -> {
@@ -159,7 +157,6 @@ public class ClientGameApp extends GameApplication {
         });
 
         root.getChildren().addAll(title, btnPlay, btnHelp, btnAbout, btnScores);
-        // Eliminar o comentar la línea del color de fondo plano
 
         // Usar StackPane para poner la imagen de fondo detrás del VBox
         StackPane stack = new StackPane();
@@ -171,9 +168,7 @@ public class ClientGameApp extends GameApplication {
         stage.show();
     }
 
-    /**
-     * Muestra un diálogo para introducir la IP del servidor.
-     */
+   //Muestra un dialogo para ingresar la IP del servidor.
     private void showServerIPDialog() {
         Platform.runLater(() -> {
             Stage dialog = new Stage();
@@ -210,11 +205,9 @@ public class ClientGameApp extends GameApplication {
         });
     }
 
-    /**
-     * Muestra el menú de selección de personaje.
-     */
+    //Muestra el menú de selección de personajes.
     private void showCharacterSelectionMenu() {
-        Platform.runLater(() -> { // Asegura que se ejecuta en el hilo FX
+        Platform.runLater(() -> { // Se asegura que se ejecuta en el hilo FX
             Stage stage = new Stage();
 
             // Cargar la imagen de fondo desde los recursos
@@ -287,9 +280,7 @@ public class ClientGameApp extends GameApplication {
         });
     }
 
-    /**
-     * Muestra un diálogo de ayuda con las instrucciones y reglas del juego.
-     */
+     //Muestra un diálogo de ayuda con las instrucciones y reglas del juego.
     private void showHelp() {
         String helpText = "¡Bienvenido a Sonic Adventure FXGL!\n\n" +
                           "   Cómo jugar:\n" +
@@ -330,9 +321,7 @@ public class ClientGameApp extends GameApplication {
         dialog.show();
     }
 
-    /**
-     * Muestra un diálogo con información sobre el juego, desarrolladores y versión.
-     */
+    //Muestra un diálogo con información sobre el juego, desarrolladores y versión.
     private void showAbout() {
         String aboutText = "Acerca de Sonic Adventure FXGL\n\n" +
                            "Lenguaje de Programación: JAVA\n" +
@@ -364,9 +353,7 @@ public class ClientGameApp extends GameApplication {
         dialog.show();
     }
 
-    /**
-     * Muestra las puntuaciones más altas registradas.
-     */
+    //Muestra las puntuaciones más altas en un diálogo.
     private void showScores() {
         // Ordenar las puntuaciones en orden descendente
         Collections.sort(highScores, Collections.reverseOrder());
@@ -375,7 +362,7 @@ public class ClientGameApp extends GameApplication {
         if (highScores.isEmpty()) {
             sb.append("Aún no hay puntuaciones registradas.");
         } else {
-            // Mostrar solo las 10 mejores puntuaciones (o menos si hay menos de 10)
+            // Mostrar solo las 10 mejores puntuaciones.
             for (int i = 0; i < Math.min(highScores.size(), 10); i++) {
                 ScoreEntry entry = highScores.get(i);
                 sb.append(String.format("%d. %s: %d\n", i + 1, entry.getPlayerName(), entry.getScore()));
@@ -453,11 +440,11 @@ public class ClientGameApp extends GameApplication {
                     Bundle solicitar = new Bundle("SolicitarCrearPersonaje");
                     solicitar.put("id", idPendiente);
                     solicitar.put("tipo", personajePendiente);
-                    solicitar.put("x", 50); // Initial X position
-                    solicitar.put("y", 150); // Initial Y position
+                    solicitar.put("x", 50); // Posición inicial X
+                    solicitar.put("y", 150); // Posicion inicial Y
                     conexion.send(solicitar);
 
-                    // Send initial position to synchronize server
+                    // Envia posición inicial al servidor
                     Bundle sync = new Bundle("SyncPos");
                     sync.put("id", idPendiente);
                     sync.put("x", 50);
@@ -481,7 +468,7 @@ public class ClientGameApp extends GameApplication {
                         .findFirst()
                         .ifPresent(Entity::removeFromWorld);
 
-                    // Update counter if the player is oneself
+                    // Actualiza contador si el jugador local es quien recogió el anillo
                     String playerId = bundle.get("playerId");
                     if (player != null && playerId.equals(player.getId())) {
                         contadorAnillos++;
@@ -555,7 +542,7 @@ public class ClientGameApp extends GameApplication {
                     double y = ((Number) bundle.get("y")).doubleValue();
                     String id = bundle.get("id");
                     Entity robot = spawn("robotEnemigo", x, y);
-                    robot.getProperties().setValue("id", id); // Save id to identify it later
+                    robot.getProperties().setValue("id", id); // Guarda el id para identificarlo más tarde
                     break;
                 }
 
@@ -564,7 +551,7 @@ public class ClientGameApp extends GameApplication {
                     double y = ((Number) bundle.get("y")).doubleValue();
                     String id = bundle.get("id");
                     Entity eggman = spawn("eggman", x, y);
-                    eggman.getProperties().setValue("id", id); // Save id to identify it later
+                    eggman.getProperties().setValue("id", id);
 
                     break;
                 }
@@ -574,8 +561,7 @@ public class ClientGameApp extends GameApplication {
                     double y = ((Number) bundle.get("y")).doubleValue();
                     String id = bundle.get("id");
                     Entity ring = spawn("ring", x, y);
-                    ring.getProperties().setValue("id", id); // Save id to identify it later
-                    break;
+                    ring.getProperties().setValue("id", id);
                 }
 
                 case "crearbasura": {
@@ -694,7 +680,7 @@ public class ClientGameApp extends GameApplication {
                 case "Detente": {
                     String moveId = bundle.get("id");
                     if (player != null && moveId.equals(player.getId())) {
-                        return; // Ignore your own messages
+                        return; // Ignora tus propios movimientos
                     }
                     Player remotePlayer = personajeRemotos.get(moveId);
                     if (remotePlayer == null) {
@@ -811,7 +797,7 @@ public class ClientGameApp extends GameApplication {
                             : player.getX() - punchWidth;
                         double punchY = player.getY();
 
-                        // Busca enemigos en el área de golpe. (Rectangle2D.Double es una implementación de Rectangle2D)
+                        // Busca enemigos en el área de golpe.
                         getGameWorld().getEntitiesInRange(new javafx.geometry.Rectangle2D(punchX, punchY, punchWidth, punchHeight)).stream()
                             .filter(e -> e.isType(GameFactory.EntityType.ROBOT_ENEMIGO))
                             .findFirst() // Golpea solo al primer enemigo encontrado.
@@ -824,10 +810,9 @@ public class ClientGameApp extends GameApplication {
                     }
                 } else if (playerType.equals("sonic")) {
                     SonicComponent sonicComp = player.getComponent(SonicComponent.class);
-                    // Intenta transformar a Sonic. El método devuelve true si la transformación es exitosa.
+                    // Intenta transformar a Sonic.
                     if (sonicComp != null && sonicComp.transform()) {
                         gameLogic.activarInvencibilidad(6000, player); // Activa 6 segundos de invencibilidad.
-                        
                         // Programa la reversión al estado normal después de 6 segundos.
                         getGameTimer().runOnceAfter(sonicComp::revert, Duration.seconds(6));
                     }
@@ -911,7 +896,6 @@ public class ClientGameApp extends GameApplication {
 
     private void recogerBasura(Player entidad, Entity basuraEntidad) {
         String trashId = basuraEntidad.getProperties().getString("id");
-
         String tipo = entidad.getTipo();
 
         Bundle recoger = new Bundle("RecogerPlastico");
@@ -930,7 +914,7 @@ public class ClientGameApp extends GameApplication {
             play("perder_anillos.wav");
             contadorAnillos = 0;
             gameLogic.cambiarTextoAnillos("Anillos: " + contadorAnillos);
-            gameLogic.activarInvencibilidad(3000, player); // Esto usará el TimerAction interno de GameLogic
+            gameLogic.activarInvencibilidad(3000, player);
             return; 
         }
 
@@ -940,13 +924,11 @@ public class ClientGameApp extends GameApplication {
         if (player.estaMuerto()) {
             showGameOver();
         } else {
-            gameLogic.activarInvencibilidad(3000, player); // Esto usará el TimerAction interno de GameLogic
+            gameLogic.activarInvencibilidad(3000, player);
         }
     }
 
-    /**
-     * Muestra el mensaje de Game Over con un diseño personalizado y solicita el nombre del jugador para la puntuación.
-     */
+      //Muestra el mensaje de Game Over con un diseño personalizado y solicita el nombre del jugador para la puntuación.
     private void showGameOver() {
         if (gameOverShown) return;
         gameOverShown = true;
@@ -989,9 +971,7 @@ public class ClientGameApp extends GameApplication {
         });
     }
 
-    /**
-     * Muestra el mensaje de Juego Ganado y solicita el nombre del jugador para la puntuación.
-     */
+      //Muestra el mensaje de Juego Ganado y solicita el nombre del jugador para la puntuación.
     private void showGameWon() {
         if (gameTimerAction != null) {
             gameTimerAction.expire();
@@ -1003,11 +983,7 @@ public class ClientGameApp extends GameApplication {
         });
     }
 
-    /**
-     * Solicita al usuario un nombre y guarda la puntuación, usando el mismo estilo visual que el menú principal.
-     * Si el nombre es vacío o nulo, vuelve a solicitarlo.
-     * @param score La puntuación a guardar.
-     */
+      //Solicita al usuario un nombre y guarda la puntuación.
     private void promptForNameAndSaveScore(int score) {
         Platform.runLater(() -> {
             Stage dialog = new Stage();
@@ -1053,10 +1029,7 @@ public class ClientGameApp extends GameApplication {
         });
     }
 
-    /**
-     * Reinicia el estado del juego y vuelve al menú principal.
-     * Ahora se activa mediante una bandera y se ejecuta en onUpdate.
-     */
+     //Reinicia el estado del juego y vuelve al menú principal.
     private void performResetAndReturnToMenu() {
         // Limpiar todas las entidades del mundo del juego
         List<Entity> allEntities = new ArrayList<>(getGameWorld().getEntities());
@@ -1106,7 +1079,7 @@ public class ClientGameApp extends GameApplication {
 
         // Sincronizar posición del jugador con el servidor más frecuentemente
         if (conexion != null && player != null && isPlayerReady) { // Solo sincronizar si el jugador está listo
-            if (clientUpdateCount % 3 == 0) { // Sincronizar cada 3 ticks (aprox. 20 veces/seg a 60 FPS)
+            if (clientUpdateCount % 3 == 0) { // Sincronizar cada 3 ticks.
                 Bundle bundle = new Bundle("SyncPos");
                 bundle.put("id", player.getId());
                 bundle.put("x", player.getX());

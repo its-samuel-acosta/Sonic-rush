@@ -7,10 +7,7 @@ import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
 import javafx.geometry.Point2D;
 
-/**
- * Clase abstracta base para los componentes de personaje del jugador.
- * Maneja la lógica común de movimiento, animaciones y saltos.
- */
+//Clase abstracta base para los componentes de personaje del jugador.
 @Required(PhysicsComponent.class) // Asegura que la entidad tenga un PhysicsComponent
 public abstract class PlayerComponent extends Component {
 
@@ -31,16 +28,13 @@ public abstract class PlayerComponent extends Component {
         this.physics = entity.getComponent(PhysicsComponent.class);
         if (this.physics == null) {
             System.err.println("ERROR: PhysicsComponent es nulo en " + getTipo() + " en onAdded!");
-        } else {
-            // System.out.println("DEBUG: PhysicsComponent inicializado para " + getTipo() + " en onAdded.");
-        }
+        } 
 
         entity.getTransformComponent().setScaleOrigin(new Point2D(16, 21));
         entity.getViewComponent().addChild(texture);
         physics.onGroundProperty().addListener((obs, old, tocandoPiso) -> {
             if (tocandoPiso) {
                 saltosPermitidos = MAX_SALTOS;
-                // System.out.println("DEBUG: " + getTipo() + " está en el suelo. Saltos restablecidos a " + MAX_SALTOS);
             }
         });
     }
@@ -51,8 +45,6 @@ public abstract class PlayerComponent extends Component {
             System.err.println("ERROR: PhysicsComponent es nulo en onUpdate para " + getTipo() + ". No se puede actualizar la animación o velocidad.");
             return;
         }
-        // Depuración de velocidad actual en cada frame
-        // System.out.println("DEBUG: " + getTipo() + " Velocidad actual - X: " + physics.getVelocityX() + ", Y: " + physics.getVelocityY());
 
         // Lógica de animación basada en el movimiento
         if (physics.isMovingX() && !physics.isMovingY()) {
@@ -75,10 +67,8 @@ public abstract class PlayerComponent extends Component {
             System.err.println("ERROR: PhysicsComponent es nulo al intentar mover a la izquierda para " + getTipo() + ". No se puede aplicar velocidad.");
             return;
         }
-        // System.out.println("DEBUG: Intentando establecer velocidad izquierda para " + getTipo());
         getEntity().setScaleX(-1); // Voltear el sprite
         physics.setVelocityX(-velocidad_lateral_base);
-        // System.out.println("DEBUG: " + getTipo() + " moviéndose a la izquierda. VelocidadX establecida a: " + physics.getVelocityX());
     }
 
     public void moverDerecha() {
@@ -86,10 +76,8 @@ public abstract class PlayerComponent extends Component {
             System.err.println("ERROR: PhysicsComponent es nulo al intentar mover a la derecha para " + getTipo() + ". No se puede aplicar velocidad.");
             return;
         }
-        // System.out.println("DEBUG: Intentando establecer velocidad derecha para " + getTipo());
         getEntity().setScaleX(1); // Orientar el sprite a la derecha
         physics.setVelocityX(velocidad_lateral_base);
-        // System.out.println("DEBUG: " + getTipo() + " moviéndose a la derecha. VelocidadX establecida a: " + physics.getVelocityX());
     }
 
     public void detener() {
@@ -97,9 +85,7 @@ public abstract class PlayerComponent extends Component {
             System.err.println("ERROR: PhysicsComponent es nulo al intentar detener para " + getTipo() + ". No se puede aplicar velocidad.");
             return;
         }
-        // System.out.println("DEBUG: Intentando detener para " + getTipo());
         physics.setVelocityX(0);
-        // System.out.println("DEBUG: " + getTipo() + " detenido. VelocidadX establecida a: " + physics.getVelocityX());
     }
 
     public void saltar() {
@@ -108,15 +94,12 @@ public abstract class PlayerComponent extends Component {
             return;
         }
         if (saltosPermitidos > 0) {
-            // System.out.println("DEBUG: Intentando saltar para " + getTipo());
             physics.setVelocityY(-velocidad_vertical_base);
             saltosPermitidos--;
-            // System.out.println("DEBUG: " + getTipo() + " saltó. VelocidadY establecida a: " + physics.getVelocityY() + ", Saltos restantes: " + saltosPermitidos);
         } else {
-            // System.out.println("DEBUG: " + getTipo() + " no le quedan saltos.");
         }
     }
     
-    // La interacción por defecto no hace nada, se sobreescribe en Knuckles
+    // La interacción por defecto
     public void interactuar() {}
 }
