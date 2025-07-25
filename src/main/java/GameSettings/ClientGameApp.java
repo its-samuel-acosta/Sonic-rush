@@ -66,6 +66,7 @@ public class ClientGameApp extends GameApplication {
     private final Map<String, Point2D> remoteTargetPositions = new HashMap<>();
     private String serverIP = null; // Variable para la IP del servidor
     private boolean gameOverShown = false;
+    private boolean gameWonShown = false; // Bandera para evitar bucle de victoria
 
     @Override
     protected void initSettings(GameSettings gameSettings) {
@@ -966,6 +967,8 @@ public class ClientGameApp extends GameApplication {
 
       //Muestra el mensaje de Juego Ganado y solicita el nombre del jugador para la puntuación.
     private void showGameWon() {
+        if (gameWonShown) return;
+        gameWonShown = true;
         if (gameTimerAction != null) {
             gameTimerAction.expire();
             gameTimerAction = null; 
@@ -1091,6 +1094,7 @@ public class ClientGameApp extends GameApplication {
         // Resetear la bandera
         pendingReset = false;
         gameOverShown = false;
+        gameWonShown = false; // Reiniciar bandera de victoria
     }
 
     @Override
