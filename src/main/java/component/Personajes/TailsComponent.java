@@ -29,4 +29,5 @@ public class TailsComponent extends PlayerComponent {
     public String getTipo() {
         return "tails"; 
     }
+    
 }

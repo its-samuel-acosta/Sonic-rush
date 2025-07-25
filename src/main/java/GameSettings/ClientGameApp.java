@@ -67,6 +67,7 @@ public class ClientGameApp extends GameApplication {
     private boolean isPlayerReady = false; // Nueva bandera para controlar la disponibilidad del jugador
     private final Map<String, Point2D> remoteTargetPositions = new HashMap<>();
     private String serverIP = null; // Nueva variable para la IP del servidor
+    private boolean gameOverShown = false;
 
     @Override
     protected void initSettings(GameSettings gameSettings) {
@@ -186,7 +187,7 @@ public class ClientGameApp extends GameApplication {
             title.setFill(Color.WHITE);
             title.setStyle("-fx-effect: dropshadow(gaussian, black, 4, 0.7, 2, 2);");
             javafx.scene.control.TextField ipField = new javafx.scene.control.TextField();
-            ipField.setPromptText("Ejemplo: 123.123.123.123");
+            ipField.setPromptText("127.0.0.1");
             ipField.setMaxWidth(220);
             ipField.setStyle("-fx-font-size: 18px; -fx-background-radius: 8px; -fx-background-color: #003366; -fx-text-fill: white; -fx-prompt-text-fill: #b0c4de; -fx-border-color: #0055aa; -fx-border-radius: 8px; -fx-padding: 8px;");
             Button btnOK = new Button("Conectar");
@@ -950,15 +951,46 @@ public class ClientGameApp extends GameApplication {
     }
 
     /**
-     * Muestra el mensaje de Game Over y solicita el nombre del jugador para la puntuación.
+     * Muestra el mensaje de Game Over con un diseño personalizado y solicita el nombre del jugador para la puntuación.
      */
     private void showGameOver() {
+        if (gameOverShown) return;
+        gameOverShown = true;
         if (gameTimerAction != null) {
             gameTimerAction.expire();
-            gameTimerAction = null; 
+            gameTimerAction = null;
         }
-        getDialogService().showMessageBox("¡Game Over!", () -> {
-            promptForNameAndSaveScore(0);
+        Platform.runLater(() -> {
+            Stage dialog = new Stage();
+            // Fondo visual igual que el menú principal
+            Image fondoImg = new Image(getClass().getResourceAsStream("/assets/textures/background/fondo_menu.png"));
+            ImageView fondoView = new ImageView(fondoImg);
+            fondoView.setFitWidth(400);
+            fondoView.setFitHeight(250);
+
+            VBox root = new VBox(20);
+            root.setAlignment(Pos.CENTER);
+            Text title = new Text("¡GAME OVER!");
+            title.setFont(javafx.scene.text.Font.font("Impact", 40));
+            title.setFill(Color.WHITE);
+            title.setStyle("-fx-effect: dropshadow(gaussian, black, 4, 0.7, 2, 2);");
+
+            Button btnContinuar = new Button("Registrar puntuación");
+            String buttonStyle = "-fx-font-family: 'Impact'; -fx-font-size: 22px; -fx-padding: 10px 20px; -fx-text-fill: white; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-background-color: #FF0000; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);";
+            btnContinuar.setStyle(buttonStyle);
+            btnContinuar.setOnMouseExited(e -> btnContinuar.setStyle(buttonStyle));
+            btnContinuar.setOnAction(e -> {
+                dialog.close();
+                promptForNameAndSaveScore(0);
+            });
+
+            root.getChildren().addAll(title, btnContinuar);
+            StackPane stack = new StackPane();
+            stack.getChildren().addAll(fondoView, root);
+            Scene scene = new Scene(stack, 400, 250);
+            dialog.setScene(scene);
+            dialog.setTitle("Game Over");
+            dialog.show();
         });
     }
 
@@ -977,23 +1009,52 @@ public class ClientGameApp extends GameApplication {
     }
 
     /**
-     * Solicita al usuario un nombre y guarda la puntuación.
+     * Solicita al usuario un nombre y guarda la puntuación, usando el mismo estilo visual que el menú principal.
      * Si el nombre es vacío o nulo, vuelve a solicitarlo.
      * @param score La puntuación a guardar.
      */
     private void promptForNameAndSaveScore(int score) {
-        getDialogService().showInputBox("Ingresa tu nombre para el registro de puntuación:", name -> {
-            String playerName = name;
-            if (playerName == null || playerName.trim().isEmpty()) {
-                getDialogService().showMessageBox("El nombre no puede estar vacío. Por favor, intenta de nuevo.", () -> {
-                    promptForNameAndSaveScore(score);
-                });
-                return; 
-            }
-            highScores.add(new ScoreEntry(playerName.trim(), score));
-            
-            // Establecer bandera para reiniciar en el próximo onUpdate
-            pendingReset = true;
+        Platform.runLater(() -> {
+            Stage dialog = new Stage();
+            // Fondo visual igual que el menú principal
+            Image fondoImg = new Image(getClass().getResourceAsStream("/assets/textures/background/fondo_menu.png"));
+            ImageView fondoView = new ImageView(fondoImg);
+            fondoView.setFitWidth(400);
+            fondoView.setFitHeight(250);
+
+            VBox root = new VBox(20);
+            root.setAlignment(Pos.CENTER);
+            Text title = new Text("Nombre para la puntuación:");
+            title.setFont(javafx.scene.text.Font.font("Impact", 22));
+            title.setFill(Color.WHITE);
+            title.setStyle("-fx-effect: dropshadow(gaussian, black, 3, 0.7, 2, 2);");
+            javafx.scene.control.TextField nameField = new javafx.scene.control.TextField();
+            nameField.setPromptText("Tu nombre...");
+            nameField.setMaxWidth(220);
+            nameField.setStyle("-fx-font-size: 18px; -fx-background-radius: 8px; -fx-background-color: #003366; -fx-text-fill: white; -fx-prompt-text-fill: #b0c4de; -fx-border-color: #0055aa; -fx-border-radius: 8px; -fx-padding: 8px;");
+            Button btnOK = new Button("Guardar puntuación");
+            String buttonStyle = "-fx-font-family: 'Impact'; -fx-font-size: 20px; -fx-background-color: #0000FF; -fx-text-fill: white; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-effect: dropshadow(gaussian, black, 2, 0.7, 1, 1);";
+            btnOK.setStyle(buttonStyle);
+            btnOK.setOnMouseExited(ev -> btnOK.setStyle(buttonStyle));
+            btnOK.setOnAction(ev -> {
+                String playerName = nameField.getText();
+                if (playerName == null || playerName.trim().isEmpty()) {
+                    // Mensaje de error visual
+                    nameField.setStyle("-fx-background-color: #ffcccc; -fx-font-size: 18px; -fx-background-radius: 8px; -fx-text-fill: red; -fx-border-color: #FF0000; -fx-border-radius: 8px; -fx-padding: 8px;");
+                    nameField.setPromptText("El nombre no puede estar vacío");
+                    return;
+                }
+                highScores.add(new ScoreEntry(playerName.trim(), score));
+                dialog.close();
+                pendingReset = true;
+            });
+            root.getChildren().addAll(title, nameField, btnOK);
+            StackPane stack = new StackPane();
+            stack.getChildren().addAll(fondoView, root);
+            Scene scene = new Scene(stack, 400, 250);
+            dialog.setScene(scene);
+            dialog.setTitle("Registro de puntuación");
+            dialog.show();
         });
     }
 
@@ -1034,6 +1095,7 @@ public class ClientGameApp extends GameApplication {
 
         // Resetear la bandera
         pendingReset = false;
+        gameOverShown = false;
     }
 
     @Override
