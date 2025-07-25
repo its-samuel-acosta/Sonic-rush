@@ -267,9 +267,6 @@ public class ServerGameApp extends GameApplication implements Serializable {
         String trashId = bundle.get("trashId");
         Entity trash = basuras.get(trashId);
         if (trash != null) {
-            String tipoJugador = bundle.get("tipo");
-            String tipoBasura = trash.getProperties().getString("tipo");
-
             boolean puedeRecoger = true; // Ahora todos los personajes pueden recoger cualquier basura
             if (puedeRecoger) {
                 basuras.remove(trashId).removeFromWorld(); 
@@ -321,10 +318,10 @@ public class ServerGameApp extends GameApplication implements Serializable {
      */
     private void verificarEventoBasura() {
         int cantidadRestante = basuras.size(); 
-        if (cantidadRestante <= 5 && !eventosDisparados.contains(6)) {
+        if (cantidadRestante <= 1 && !eventosDisparados.contains(6)) {
             eventosDisparados.add(6);
             String eggmanId = UUID.randomUUID().toString();
-            Entity eggman = spawn("eggman", 1600, 340);
+            Entity eggman = spawn("eggman", 2000, 250);
             eggman.getProperties().setValue("id", eggmanId);
             eggmanBoss.put(eggmanId, eggman);
             Bundle crearEggman = new Bundle("CrearEggman");
