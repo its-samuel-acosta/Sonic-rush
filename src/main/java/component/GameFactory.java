@@ -34,11 +34,7 @@ public class GameFactory implements EntityFactory {
     public enum EntityType {
         PLAYER, FONDO, TIERRA, ROBOT_ENEMIGO, RING, AGUA, BASURA, ARBOL, PAPEL, CAUCHO, EGGMAN
     }
-
-    /**
-     * Método base privado para crear cualquier tipo de jugador.
-     * Centraliza la configuración de física y componentes comunes.
-     */
+    //Metodo para crear una base de jugador con componentes comunes
     private Player createPlayerBase(SpawnData data, PlayerComponent playerComponent) {
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(BodyType.DYNAMIC);
@@ -79,14 +75,10 @@ public class GameFactory implements EntityFactory {
         return createPlayerBase(data, new KnucklesComponent());
     }
 
-    /**
-     * Crea la entidad "fondo".
-     * @param data Datos de spawn.
-     * @return Entidad de fondo.
-     */
+ //Crea la entidad "fondo".
     @Spawns("fondo")
     public Entity newBackground(SpawnData data) {
-        // Carga la textura del fondo. Asegúrate de que "fondo.png" esté en assets/textures/
+        // Carga la textura del fondo.
         Texture backgroundTexture = getAssetLoader().loadTexture("fondo.png"); 
         
         return entityBuilder(data)
@@ -119,13 +111,7 @@ public class GameFactory implements EntityFactory {
                 .build();
     }
 
-    /**
-     * Método base privado para crear ítems (anillos, basura, papel, caucho).
-     * @param data Datos de spawn.
-     * @param type Tipo de entidad del ítem.
-     * @param itemComponent Componente específico del ítem.
-     * @return Entidad del ítem.
-     */
+        //Método base privado para crear ítems.
     private Entity createItem(SpawnData data, EntityType type, Component itemComponent) {
         Entity item = entityBuilder(data)
                 .type(type)
@@ -145,24 +131,25 @@ public class GameFactory implements EntityFactory {
     @Spawns("basura")
     public Entity basura(SpawnData data) {
         Entity trash = createItem(data, EntityType.BASURA, new TrashComponent());
-        trash.getProperties().setValue("tipo", "basura"); // Añadir propiedad de tipo
+        trash.getProperties().setValue("tipo", "basura"); 
         return trash;
     }
 
     @Spawns("papel")
     public Entity papel(SpawnData data) {
         Entity paper = createItem(data, EntityType.PAPEL, new PapelComponent());
-        paper.getProperties().setValue("tipo", "papel"); // Añadir propiedad de tipo
+        paper.getProperties().setValue("tipo", "papel"); 
         return paper;
     }
 
     @Spawns("caucho")
     public Entity caucho(SpawnData data) {
         Entity rubber = createItem(data, EntityType.CAUCHO, new CauchoComponent());
-        rubber.getProperties().setValue("tipo", "caucho"); // Añadir propiedad de tipo
+        rubber.getProperties().setValue("tipo", "caucho"); 
         return rubber;
     }
 
+    // Método para crear la entidad Robot Enemigo.
     @Spawns("robotEnemigo")
     public Entity robotEnemigo(SpawnData data) {
         PhysicsComponent physics = new PhysicsComponent();
@@ -170,7 +157,8 @@ public class GameFactory implements EntityFactory {
 
         Entity robot = entityBuilder(data)
                 .type(EntityType.ROBOT_ENEMIGO)
-                .bbox(new HitBox(new Point2D(0, 0), BoundingShape.box(48, 48))) // hitbox cuadrado alineado con el sprite
+                 // hitbox cuadrado alineado con el sprite
+                .bbox(new HitBox(new Point2D(0, 0), BoundingShape.box(48, 48)))
                 .with(physics)
                 .with(new CollidableComponent(true))
                 .with(new RobotComponent())
@@ -182,6 +170,7 @@ public class GameFactory implements EntityFactory {
         return robot;
     }
 
+    // Método para crear la entidad Eggman.
     @Spawns("eggman")
     public Entity eggman(SpawnData data) {
         PhysicsComponent physics = new PhysicsComponent();
