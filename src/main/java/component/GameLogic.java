@@ -12,8 +12,10 @@ import java.io.Serializable;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
+// CLase que maneja los estados del juego, tesxto en pantalla y mecanicas globales
 public class GameLogic extends Component implements Serializable {
 
+    //Varaibles para Textos
     private Text textoCaucho;
     private Text textoAnillos;
     private Text textoVidas;
@@ -24,14 +26,16 @@ public class GameLogic extends Component implements Serializable {
     private ProgressBar currentProgressBar; 
     private ColorAdjust currentColorAdjust; 
 
-    // Variables para la invencibilidad manual
-    private double invincibilityRemainingTime = 0.0; // Tiempo restante de invencibilidad
-    private Player invinciblePlayer = null; // Referencia al jugador invencible
-    private double blinkTimerAccumulator = 0.0; // Acumulador para el parpadeo
+    // Variables para la invencibilidad 
+    private double invincibilityRemainingTime = 0.0;    // Tiempo restante de invencibilidad
+    private Player invinciblePlayer = null;             // Referencia al jugador invencible
+    private double blinkTimerAccumulator = 0.0;         // Acumulador para el parpadeo
 
     public GameLogic() {
+        //Fuente personalizada para los textox dentro del juego
         Font miFuente = getAssetLoader().loadFont("PublicPixel.ttf").newFont(24);
 
+        //Textos en Pantalla
         textoCaucho = new Text("Caucho: 0");
         textoCaucho.setStyle("-fx-font-size: 24px; -fx-fill: red;");
         textoCaucho.setFont(miFuente);
@@ -68,11 +72,11 @@ public class GameLogic extends Component implements Serializable {
 
     @Override
     public void onUpdate(double tpf) {
-        // Lógica de invencibilidad manual
+        // Lógica de invencibilidad 
         if (invincibilityRemainingTime > 0) {
             invincibilityRemainingTime -= tpf * 1000; // Restar milisegundos
 
-            // Lógica de parpadeo manual
+            // Parpadeo por invencibilidad
             blinkTimerAccumulator += tpf * 1000;
             if (blinkTimerAccumulator >= 200) { // Cada 200 ms
                 if (invinciblePlayer != null) {
@@ -84,9 +88,9 @@ public class GameLogic extends Component implements Serializable {
             if (invincibilityRemainingTime <= 0) {
                 if (invinciblePlayer != null) {
                     invinciblePlayer.setInvencibilidad(false);
-                    invinciblePlayer.getViewComponent().setVisible(true); // Asegurarse de que sea visible al final
+                    invinciblePlayer.getViewComponent().setVisible(true); // Restaurar visibilidad
                 }
-                invinciblePlayer = null; // Limpiar la referencia
+                invinciblePlayer = null; // Limpiar 
                 invincibilityRemainingTime = 0;
                 blinkTimerAccumulator = 0; // Resetear el acumulador de parpadeo
             }
@@ -102,11 +106,8 @@ public class GameLogic extends Component implements Serializable {
         System.out.println(titulo);
     }
 
-    /**
-     * Agrega o actualiza una barra de progreso en la interfaz de usuario.
-     * Gestiona la instancia de la barra de progreso para evitar duplicados.
-     * @param num El valor de progreso (entre 0.0 y 1.0).
-     */
+    //Agrega una barra de progreso
+    //Descartado
     public void agregarBarra(float num) {
         if (currentProgressBar != null) {
             getGameScene().getRoot().getChildren().remove(currentProgressBar);
@@ -129,11 +130,8 @@ public class GameLogic extends Component implements Serializable {
         this.currentProgressBar = progressBar;
     }
 
-    /**
-     * Aplica o actualiza un filtro de color en la escena del juego.
-     * Gestiona la instancia del filtro para evitar duplicados.
-     * @param num El valor para el tono del color (hue).
-     */
+    //Aplica efectos de color en la pantalla
+    //Descartado
     public void filtroColor(float num) {
         if (currentColorAdjust == null) {
             currentColorAdjust = new ColorAdjust();
@@ -177,9 +175,7 @@ public class GameLogic extends Component implements Serializable {
         reset(); 
     }
 
-    /**
-     * Restablece todos los elementos de UI gestionados por GameLogic a su estado inicial.
-     */
+    //REinicia el estado de los textos en juego
     public void reset() {
         textoCaucho.setText("Caucho: 0");
         textoAnillos.setText("Anillos: 0");
@@ -204,12 +200,7 @@ public class GameLogic extends Component implements Serializable {
         blinkTimerAccumulator = 0.0;
     }
 
-    /**
-     * Activa la invencibilidad del jugador por un tiempo determinado,
-     * incluyendo un efecto de parpadeo.
-     * @param milisegundos Duración de la invencibilidad en milisegundos.
-     * @param player El objeto Player al que se le aplica la invencibilidad.
-     */
+    //Activa la invencibilidad y aplica el efecto de parpadeo
     public void activarInvencibilidad(int milisegundos, Player player) {
         player.setInvencibilidad(true);
         this.invincibilityRemainingTime = milisegundos;
