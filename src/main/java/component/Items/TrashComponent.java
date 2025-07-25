@@ -12,8 +12,8 @@ public class TrashComponent extends Component {
     public void onAdded() {
         Image image = image("Items/basura.png");
         ImageView view = new ImageView(image);
-        view.setFitWidth(21);   // Ajusta el tamaño según tu sprite
-        view.setFitHeight(21);
+        view.setFitWidth(32);   // Aumentado para mejor visibilidad
+        view.setFitHeight(32);
         entity.getViewComponent().addChild(view);
     }
 }
